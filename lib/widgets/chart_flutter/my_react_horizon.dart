@@ -1,19 +1,12 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/shop/models/rank_entity.dart';
 
 class MyReactHorizon extends StatelessWidget {
+  List<RankItem> items;
 
-
-  const MyReactHorizon({Key key}) : super(key: key);
-
-  // /// Creates a [BarChart] with sample data and no transition.
-  // factory MyReact.withSampleData() {
-  //   return new MyReact(
-  //     _createSampleData(),
-  //     // Disable animations for image tests.
-  //     animate: false,
-  //   );
-  // }
+  List<OrdinalSales> data = [];
+  MyReactHorizon(this.items, {Key key}) : super(key: key);
 
 
   @override
@@ -26,13 +19,12 @@ class MyReactHorizon extends StatelessWidget {
   }
 
   /// Create one series with sample hard coded data.
-  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
-    final data = [
-      new OrdinalSales('北京', 100),
-      new OrdinalSales('上海', 85),
-      new OrdinalSales('广州', 50),
-      new OrdinalSales('深圳', 35),
-    ];
+  List<charts.Series<OrdinalSales, String>> _createSampleData() {
+    if(items != null && items.length > 0){
+      items.forEach((v) {
+        data.add(new OrdinalSales(v.name, v.c));
+      });
+    }
 
     return [
       new charts.Series<OrdinalSales, String>(

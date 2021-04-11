@@ -1,19 +1,13 @@
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/statistics/models/aqi_model.dart';
 
 class MyReact extends StatelessWidget {
 
+  List<OrdinalSales> data = [];
+  List<AqiHourItem> item;
 
-  const MyReact({Key key}) : super(key: key);
-
-  // /// Creates a [BarChart] with sample data and no transition.
-  // factory MyReact.withSampleData() {
-  //   return new MyReact(
-  //     _createSampleData(),
-  //     // Disable animations for image tests.
-  //     animate: false,
-  //   );
-  // }
+  MyReact(this.item,{Key key}) : super(key: key);
 
 
   @override
@@ -25,13 +19,12 @@ class MyReact extends StatelessWidget {
   }
 
   /// Create one series with sample hard coded data.
-  static List<charts.Series<OrdinalSales, String>> _createSampleData() {
-    final data = [
-      new OrdinalSales('2014', 5),
-      new OrdinalSales('2015', 25),
-      new OrdinalSales('2016', 100),
-      new OrdinalSales('2017', 75),
-    ];
+  List<charts.Series<OrdinalSales, String>> _createSampleData() {
+    if(item != null && item.length > 0){
+      item.forEach((v) {
+        data.add(new OrdinalSales(v.hour, v.aqi));
+      });
+    }
 
     return [
       new charts.Series<OrdinalSales, String>(

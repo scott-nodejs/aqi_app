@@ -1,4 +1,6 @@
+import 'package:amap_location/amap_location.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
 import 'package:flutter_aqi/provider/base_list_provider.dart';
 import 'package:flutter_aqi/res/resources.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_aqi/statistics/statistics_router.dart';
 import 'package:flutter_aqi/utils/image_utils.dart';
 import 'package:flutter_aqi/utils/screen_utils.dart';
 import 'package:flutter_aqi/utils/theme_utils.dart';
+import 'package:flutter_aqi/utils/toast.dart';
 import 'package:flutter_aqi/widgets/chart_flutter/my_bezier.dart';
 import 'package:flutter_aqi/widgets/chart_flutter/my_react.dart';
 import 'package:flutter_aqi/widgets/load_image.dart';
@@ -29,9 +32,29 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
 
   AqiProvider provider = new AqiProvider();
 
+  String _city = '';
+
+  @override
+  void initState() {
+    super.initState();
+    this._getLocation(); //打开这个页面的时候就触发这个方法
+  }
+
   @override
   void setAqiEntity(AqiEntity entity) {
     provider.setAqiEntity(entity);
+  }
+
+  _getLocation() async{
+    //启动一下
+    await AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters  ));
+    //获取地理位置
+    var result = await AMapLocationClient.getLocation(true);
+    Toast.show("经度:${result.longitude}");
+    print("纬度:${result.latitude}");
+    setState(() {
+
+    });
   }
 
   @override
@@ -76,7 +99,28 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
           centerTitle: true,
           titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 14.0),
           collapseMode: CollapseMode.pin,
-          title: Text('模糊笔记', style: TextStyle(color: ThemeUtils.getIconColor(context)),),
+          title: InkWell(
+              onTap: (){
+                NavigatorUtils.pushResult(context, StatisticsRouter.citySelectPage, (Object result) {
+                  setState(() {
+                    final CityEntity model = result as CityEntity;
+                    _city = model.name;
+                    presenter.changeCity(model.cityCode);
+                  });
+                });
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    _city.isEmpty ? '北京市' : _city,
+                    style: TextStyle(color: ThemeUtils.getIconColor(context),fontSize:16),
+                  ),
+                  Gaps.hGap4,
+                  LoadAssetImage('goods/expand', width: 10.0, height: 10.0, color: Color(0xfff1f1f1),)
+                ],
+              ),
+          ),
         ),
       ),
       SliverPersistentHeader(
@@ -121,7 +165,7 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
               Gaps.vGap16,
               _StatisticsItem('AQI趋势图', 'sjzs', 1, MyBezier(entity?.data)),
               Gaps.vGap8,
-              _StatisticsItem('今日AQI分布图', 'jyetj', 2, MyReact()),
+              _StatisticsItem('今日AQI分布图', 'jyetj', 2, MyReact(entity?.react)),
               // Gaps.vGap8,
               // _StatisticsItem('商品统计', 'sptj', 3),
             ],

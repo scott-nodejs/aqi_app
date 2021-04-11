@@ -10,6 +10,12 @@ aqiEntityFromJson(AqiEntity data, Map<String, dynamic> json) {
       data.data.add(new AqiItem().fromJson(v));
     });
   }
+  if (json['react'] != null) {
+    data.react = new List<AqiHourItem>();
+    (json['react'] as List).forEach((v) {
+      data.react.add(new AqiHourItem().fromJson(v));
+    });
+  }
   return data;
 }
 
@@ -26,4 +32,10 @@ aqiItemFromJson(AqiItem data, Map<String, dynamic> json){
     data.date = json['date']?.toInt();
     data.aqi = json['aqi']?.toInt();
     return data;
+}
+
+aqiHourItemFromJson(AqiHourItem data, Map<String, dynamic> json){
+  data.hour = json['hour']?.toString();
+  data.aqi = json['aqi']?.toInt();
+  return data;
 }

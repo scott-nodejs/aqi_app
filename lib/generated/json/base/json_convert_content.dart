@@ -6,8 +6,8 @@
 import 'package:flutter_aqi/account/models/bank_entity.dart';
 import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/generated/json/city_entity_helper.dart';
-import 'package:flutter_aqi/shop/models/user_entity.dart';
-import 'package:flutter_aqi/generated/json/user_entity_helper.dart';
+import 'package:flutter_aqi/shop/models/rank_entity.dart';
+import 'package:flutter_aqi/generated/json/rank_entity_helper.dart';
 import 'package:flutter_aqi/statistics/models/aqi_helper.dart';
 import 'package:flutter_aqi/statistics/models/aqi_model.dart';
 
@@ -30,14 +30,22 @@ class JsonConvert<T> {
         return envEntityFromJson(data as EvnEntity, json);
       case AqiItem:
         return aqiItemFromJson(data as AqiItem, json);
+      case AqiHourItem:
+        return aqiHourItemFromJson(data as AqiHourItem, json);
+      case RankEntity:
+        return rankEntityFromJson(data as RankEntity, json);
+      case City:
+        return cityFromJson(data as City, json);
+      case RankItem:
+        return rankItemFromJson(data as RankItem, json);
     }
     return data as T;
   }
 
   static _getToJson<T>(Type type, data) {
 		switch (type) {		case CityEntity:
-			return cityEntityToJson(data as CityEntity);			case UserEntity:
-			return userEntityToJson(data as UserEntity);			    }
+			return cityEntityToJson(data as CityEntity);			case RankEntity:
+			return rankEntityToJson(data as RankEntity);			    }
     return data as T;
   }
   //Go back to a single instance by type
@@ -45,15 +53,18 @@ class JsonConvert<T> {
     switch (type) {		case 'CityEntity':
 			return CityEntity().fromJson(json);
       case 'AqiEntity':
-        return AqiEntity().fromJson(json);			    }
+        return AqiEntity().fromJson(json);
+      case 'RankEntity':
+        return RankEntity().fromJson(json);
+    }
     return null;
   }
 
   //empty list is returned by type
   static _getListFromType(String type) {
     switch (type) {			case 'CityEntity':
-			return List<CityEntity>();			case 'UserEntity':
-			return List<UserEntity>();			    }
+			return List<CityEntity>();			case 'RankEntity':
+			return List<RankEntity>();			    }
     return null;
   }
 

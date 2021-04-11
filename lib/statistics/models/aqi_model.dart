@@ -5,10 +5,16 @@ class AqiEntity with JsonConvert<AqiEntity>{
   @JSONField(name: 'envEntity')
   EvnEntity envEntity;
   List<AqiItem> data;
+  List<AqiHourItem> react;
 }
 
 class AqiItem with JsonConvert<AqiItem>{
   int date;
+  int aqi;
+}
+
+class AqiHourItem with JsonConvert<AqiHourItem>{
+  String hour;
   int aqi;
 }
 

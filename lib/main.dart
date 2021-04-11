@@ -51,7 +51,7 @@ class MyApp extends StatelessWidget {
     /// 适配数据(根据自己的数据结构，可自行选择添加)
     interceptors.add(AdapterInterceptor());
     configDio(
-      baseUrl: 'http://10.0.2.2:9090/client/api/',
+      baseUrl: 'http://aqi.appshuo.club/client/api/',
       interceptors: interceptors,
     );
   }
