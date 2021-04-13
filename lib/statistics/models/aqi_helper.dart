@@ -25,6 +25,16 @@ envEntityFromJson(EvnEntity entity, Map<String, dynamic> json){
   entity.so2 = json['so2']?.toString();
   entity.co = json['co']?.toString();
   entity.o3 = json['o3']?.toString();
+  entity.desc = json['desc']?.toString();
+  entity.level = json['level']?.toString();
+  entity.color = json['color']?.toInt();
+  entity.aqiState = json['aqiState']?.toString();
+  entity.pm10State = json['pm10State']?.toString();
+  entity.coState = json['coState']?.toString();
+  entity.so2State = json['so2State']?.toString();
+  entity.o3State = json['o3State']?.toString();
+  entity.source = json['source']?.toString();
+  entity.flag = json['flag']?.toInt();
   return entity;
 }
 

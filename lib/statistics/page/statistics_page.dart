@@ -35,26 +35,8 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
   String _city = '';
 
   @override
-  void initState() {
-    super.initState();
-    this._getLocation(); //打开这个页面的时候就触发这个方法
-  }
-
-  @override
   void setAqiEntity(AqiEntity entity) {
     provider.setAqiEntity(entity);
-  }
-
-  _getLocation() async{
-    //启动一下
-    await AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters  ));
-    //获取地理位置
-    var result = await AMapLocationClient.getLocation(true);
-    Toast.show("经度:${result.longitude}");
-    print("纬度:${result.latitude}");
-    setState(() {
-
-    });
   }
 
   @override
@@ -137,17 +119,31 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 16.0),
               alignment: Alignment.center,
-              height: 120.0,
+              height: 130.0,
               child: MyCard(
-                child: Row(
-                  children: <Widget>[
-                    _StatisticsTab('pm2.5', 'face', evn==null?'-':evn.aqi),
-                    _StatisticsTab('pm10', 'face', evn==null?'-':evn.pm10),
-                    _StatisticsTab('臭氧', 'face', evn==null?'-':evn.o3),
-                    _StatisticsTab('一氧化碳', 'face', evn==null?'-':evn.co),
-                    _StatisticsTab('二氧化硫', 'face', evn==null?'-':evn.so2),
-                  ],
-                ),
+                child: Column(
+                   mainAxisAlignment: MainAxisAlignment.center,
+                   children: [
+                       Row(
+                         children: <Widget>[
+                           _StatisticsTab('pm2.5', evn==null?'face':evn.aqiState==null?'face':evn.aqiState, evn==null?'-':evn.aqi==null?'-':evn.aqi),
+                           _StatisticsTab('pm10', evn==null?'face':evn.pm10State==null?'face':evn.pm10State, evn==null?'-':evn.pm10==null?'-':evn.pm10),
+                           _StatisticsTab('臭氧', evn==null?'face':evn.o3State==null?'face':evn.o3State, evn==null?'-':evn.o3==null?'-':evn.o3),
+                           _StatisticsTab('一氧化碳', evn==null?'face':evn.coState==null?'face':evn.coState, evn==null?'-':evn.co==null?'-':evn.co),
+                           _StatisticsTab('二氧化硫', evn==null?'face':evn?.so2State==null?'face':evn.so2State, evn==null?'-':evn.so2==null?'-':evn.so2),
+                         ],
+                     ),
+                     Gaps.vGap8,
+                     Row(
+                       children: [
+                         Gaps.hGap16,
+                         Text(evn==null?'':evn.level, style: TextStyle(fontSize: Dimens.font_sp10,color: Color(evn==null?0:evn.color))),
+                         Text(evn==null?'':evn.desc,style: const TextStyle(fontSize: Dimens.font_sp10)),
+                         Text(evn==null?'':evn.flag > 0?' 主要污染物: ${evn.source}':'',style: const TextStyle(fontSize: Dimens.font_sp10)),
+                       ],
+                     )
+                   ],
+                )
               ),
             ),
           )

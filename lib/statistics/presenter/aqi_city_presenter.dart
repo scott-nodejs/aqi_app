@@ -1,4 +1,5 @@
 
+import 'package:flustars/flustars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/mvp/base_page_presenter.dart';
 import 'package:flutter_aqi/net/net.dart';
@@ -15,19 +16,36 @@ class AqiCityPresenter extends BasePagePresenter<AqiCityIMvpView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      /// get请求参数queryParameters  post请求参数params
-      asyncRequestNetwork<AqiEntity>(Method.get,
-        url: sprintf(HttpApi.aqicity,['1451','2']),
-        onSuccess: (data) {
-          if (data != null) {
+      String location = SpUtil.getString("location");
+      if(location != null){
+        /// get请求参数queryParameters  post请求参数params
+        asyncRequestNetwork<AqiEntity>(Method.get,
+          url: sprintf(HttpApi.aqi_city_location,['2',location]),
+          onSuccess: (data) {
+            if (data != null) {
               view.setAqiEntity(data);
-          } else {
-            /// 加载失败
-            // view.provider.setHasMore(false);
-            // view.provider.setStateType(StateType.network);
-          }
-        },
-      );
+            } else {
+              /// 加载失败
+              // view.provider.setHasMore(false);
+              // view.provider.setStateType(StateType.network);
+            }
+          },
+        );
+      }else{
+        /// get请求参数queryParameters  post请求参数params
+        asyncRequestNetwork<AqiEntity>(Method.get,
+          url: sprintf(HttpApi.aqicity,['1451','2']),
+          onSuccess: (data) {
+            if (data != null) {
+              view.setAqiEntity(data);
+            } else {
+              /// 加载失败
+              // view.provider.setHasMore(false);
+              // view.provider.setStateType(StateType.network);
+            }
+          },
+        );
+      }
     });
   }
 

@@ -24,4 +24,14 @@ class EvnEntity with JsonConvert<EvnEntity>{
   String so2;
   String co;
   String o3;
+  String desc;
+  String level;
+  int color;
+  String aqiState;
+  String pm10State;
+  String coState;
+  String so2State;
+  String o3State;
+  String source;
+  int flag;
 }

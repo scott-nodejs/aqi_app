@@ -1,6 +1,7 @@
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
 
 rankEntityFromJson(RankEntity data, Map<String, dynamic> json) {
+	data.type = json['type']?.toInt();
 	if (json['citys'] != null) {
 		data.citys = new List<City>();
 		(json['citys'] as List).forEach((v) {
@@ -20,6 +21,8 @@ rankEntityFromJson(RankEntity data, Map<String, dynamic> json) {
 cityFromJson(City data, Map<String, dynamic> json){
 	data.city = json['city']?.toString();
 	data.uid = json['uid']?.toInt();
+	data.province = json['province']?.toString();
+	data.feature = json['feature']?.toString();
 	return data;
 }
 

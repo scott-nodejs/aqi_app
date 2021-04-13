@@ -1,3 +1,4 @@
+import 'package:amap_location/amap_location.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -11,7 +12,9 @@ import 'package:flutter_aqi/routers/not_found_page.dart';
 import 'package:flutter_aqi/routers/routers.dart';
 import 'package:flutter_aqi/utils/device_utils.dart';
 import 'package:flutter_aqi/utils/log_utils.dart';
+import 'package:flutter_aqi/utils/toast.dart';
 import 'package:oktoast/oktoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -33,8 +36,10 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
 
   MyApp({this.home, this.theme}) {
+    startPosition();//开启位置
     Log.init();
     initDio();
+    checkPersmission();
     Routes.initRoutes();
   }
 
@@ -51,9 +56,48 @@ class MyApp extends StatelessWidget {
     /// 适配数据(根据自己的数据结构，可自行选择添加)
     interceptors.add(AdapterInterceptor());
     configDio(
-      baseUrl: 'http://aqi.appshuo.club/client/api/',
+      baseUrl: 'http://www.hazer.top/client/api/',
       interceptors: interceptors,
     );
+  }
+
+  //检测权限状态
+  void checkPersmission() async {
+    // 申请权限
+    Map<PermissionGroup, PermissionStatus> permissions =
+    await PermissionHandler().requestPermissions([PermissionGroup.location]);
+    // 申请结果
+    PermissionStatus permission =
+    await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
+    if (permission == PermissionStatus.granted) {
+      getLocation();
+    } else {
+      Toast.show('定位权限申请被拒绝');
+      bool isOpened = await PermissionHandler().openAppSettings();//打开应用设置
+    }
+
+  }
+
+  startPosition()async{
+    await AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters  ));
+  }
+
+  getLocation()async{
+    print("准备 获取 GPS");
+    AMapLocation d = await AMapLocationClient.getLocation(true);
+    var lat = d.latitude;
+    var lng = d.longitude;
+    if(lat!=null&&lng!=null){
+      SpUtil.putString("location", lng.toString()+','+lat.toString());
+    }else{
+      Toast.show('获取位置失败，请检测GPS是否开启！');
+    }
+  }
+
+  @override
+  void dispose() {
+    //这里可以停止定位
+    AMapLocationClient.stopLocation();
   }
 
   final Widget home;

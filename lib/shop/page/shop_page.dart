@@ -7,7 +7,7 @@ import 'package:flutter_aqi/routers/fluro_navigator.dart';
 import 'package:flutter_aqi/setting/setting_router.dart';
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
 import 'package:flutter_aqi/shop/iview/shop_iview.dart';
-import 'file:///D:/flutter/flutter_aqi/lib/shop/widgets/rank_sort_menu.dart';
+import 'package:flutter_aqi/shop/widgets/rank_sort_menu.dart';
 import 'package:flutter_aqi/shop/presenter/shop_presenter.dart';
 import 'package:flutter_aqi/shop/provider/rank_provider.dart';
 import 'package:flutter_aqi/shop/shop_router.dart';
@@ -231,7 +231,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                   borderRadius: BorderRadius.circular(4.0),
                   border: Border.all(color: const Color(0xFFF7F8FA), width: 0.6),
                   image: DecorationImage(
-                    image: ImageUtils.getAssetImage('order/face'),
+                    image: ImageUtils.getAssetImage('order/${provider.rank?.type == 0 ? 'good':'bad'}'),
                     fit: BoxFit.fitWidth,
                   ),
                 ),
@@ -243,29 +243,29 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(city!=null?city.city:'', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, fontSize: Dimens.font_sp12)),
-                    Text('250ml', style: Theme.of(context).textTheme.subtitle2),
+                    Text(city!=null?city.province:'', style: Theme.of(context).textTheme.subtitle2),
                   ],
                 ),
               ),
-              Gaps.hGap8,
-              Visibility(
-                visible: !_type,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text('100件', style: Theme.of(context).textTheme.subtitle2),
-                    Text('未支付', style: Theme.of(context).textTheme.subtitle2),
-                  ],
-                ),
-              ),
+              // Gaps.hGap8,
+              // Visibility(
+              //   visible: !_type,
+              //   child: Column(
+              //     crossAxisAlignment: CrossAxisAlignment.start,
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: <Widget>[
+              //       Text('100件', style: Theme.of(context).textTheme.subtitle2),
+              //       Text('未支付', style: Theme.of(context).textTheme.subtitle2),
+              //     ],
+              //   ),
+              // ),
               Gaps.hGap16,
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: _type ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('400件', style: Theme.of(context).textTheme.subtitle2),
-                  Visibility(visible: !_type, child: Text('已支付', style: Theme.of(context).textTheme.subtitle2)),
+                  Visibility(visible: !_type, child: Text(city!=null?city.feature==null?city.province+city.city:city.feature:'', style: Theme.of(context).textTheme.subtitle2)),
+                  Text('城市特色', style: Theme.of(context).textTheme.subtitle2),
                 ],
               ),
             ],
