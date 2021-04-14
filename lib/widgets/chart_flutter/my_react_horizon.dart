@@ -1,4 +1,5 @@
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:charts_flutter/flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
 
@@ -6,6 +7,7 @@ class MyReactHorizon extends StatelessWidget {
   List<RankItem> items;
 
   List<OrdinalSales> data = [];
+  List<TickSpec<String>> tickSpecs = [];
   MyReactHorizon(this.items, {Key key}) : super(key: key);
 
 
@@ -14,7 +16,7 @@ class MyReactHorizon extends StatelessWidget {
     return new charts.BarChart(
       _createSampleData(),
       animate: false,
-      vertical: false
+      vertical: false,
     );
   }
 

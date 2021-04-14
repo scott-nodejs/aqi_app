@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:amap_location/amap_location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/account/models/city_entity.dart';
@@ -47,10 +49,20 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
                 body: Consumer<AqiProvider>(
                     builder: (_, provider, __) {
                       AqiEntity entity = provider.entity;
-                      return CustomScrollView(
-                        key: const Key('statistic_list'),
-                        physics: const ClampingScrollPhysics(),
-                        slivers: _sliverBuilder(entity),
+                      return NotificationListener<ScrollNotification>(
+                          child: RefreshIndicator(
+                              notificationPredicate: (notifation) {
+                                return true;
+                              },
+                              displacement: 100.0,
+                              onRefresh:_handleRefresh,
+                              color: Colors.blue,
+                              child:CustomScrollView(
+                                key: const Key('statistic_list'),
+                                physics: const ClampingScrollPhysics(),
+                                slivers: _sliverBuilder(entity),
+                              )
+                          )
                       );
                     }
                     ),
@@ -169,6 +181,16 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
         ),
       )
     ];
+  }
+
+  Future<void> _handleRefresh() {
+    final Completer<void> completer = Completer<void>();
+    Timer(const Duration(seconds: 1), () {
+      completer.complete();
+    });
+    return completer.future.then<void>((_) {
+      presenter.initState();
+    });
   }
 
   @override

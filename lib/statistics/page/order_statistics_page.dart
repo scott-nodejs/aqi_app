@@ -30,6 +30,7 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
   
   int _selectedIndex = 2;
   DateTime _initialDay;
+  DateTime _Day;
   Iterable<DateTime> _weeksDays;
   List<DateTime> _currentMonthsDays;
   // 周视图中选择的日期
@@ -47,9 +48,11 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
   @override
   void initState() {
     super.initState();
+
     _initialDay = DateTime.now();
     _selectedWeekDay = _initialDay.day;
     _selectedDay = _initialDay;
+    _Day = _initialDay;
     _selectedMonth = _initialDay.month;
     _weeksDays = date.Utils.daysInRange(date.Utils.previousWeek(_initialDay), DateUtils.nextDay(_initialDay)).toList().sublist(1, 8);
     _currentMonthsDays = DateUtils.daysInMonth(_initialDay);
@@ -64,7 +67,7 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
     _unSelectedTextColor = context.isDark ? Colors.white : Colours.dark_text_gray;
     return Scaffold(
       appBar: MyAppBar(
-        centerTitle: widget.index == 1 ? '订单统计' : '交易额统计',
+        centerTitle: widget.index == 1 ? '区域走势' : '按日统计',
       ),
       body: SingleChildScrollView(
         child: SafeArea(
@@ -80,7 +83,7 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
                   Gaps.hGap12,
                   Gaps.vLine,
                   Gaps.hGap12,
-                  _buildButton('${_initialDay.month.toString()}月', const Key('month'), 1),
+                  _buildButton('${_selectedMonth.toString()}月', const Key('month'), 1),
                   Gaps.hGap12,
                   Gaps.vLine,
                   Gaps.hGap12,
@@ -298,13 +301,14 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
             day.day.toString().padLeft(2, '0'), // 不足2位左边补0
             selected: day.day == _selectedDay.day && !DateUtils.isExtraDay(day, _initialDay),
             // 不是本月的日期与超过当前日期的不可点击
-            enable: day.day <= _initialDay.day && !DateUtils.isExtraDay(day, _initialDay),
+            enable: day.month <= _initialDay.month || day.day <= _initialDay.day,
             unSelectedTextColor: _unSelectedTextColor,
             /// 日历中的具体日期添加完整语义
             semanticsLabel: DateUtil.formatDate(day, format: DateFormats.zh_y_mo_d),
             onTap: () {
               setState(() {
                 _selectedDay = day;
+                _initialDay = day;
               });
             },
           ),
@@ -327,6 +331,11 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
             onTap: () {
               setState(() {
                 _selectedMonth = month;
+                if(_initialDay.month > month){
+                  String dateStr = _initialDay.year.toString() + month.toString().padLeft(2, '0') + '31';
+                  _Day = DateUtil.getDateTime(dateStr);
+                  _currentMonthsDays = DateUtils.daysInMonth(_Day);
+                }
               });
             },
           ),
@@ -349,6 +358,7 @@ class _OrderStatisticsPageState extends State<OrderStatisticsPage> with TickerPr
             onTap: () {
               setState(() {
                 _selectedWeekDay = day.day;
+                _initialDay = day;
               });
             },
           ),

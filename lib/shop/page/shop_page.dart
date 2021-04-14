@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 // import 'package:flutter_aqi/account/account_router.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
@@ -85,36 +87,53 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
             )
           ],
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-          key: const Key('goods_statistics_list'),
-          child: SafeArea(
-            child: Consumer<RankProvider>(
-                builder: (_, provider, child) {
-                  return Column(
-                      key: _bodyKey,
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        //Text(_type ? '已配货' : '最优每日排行榜', style: TextStyles.textBold24),
-                        _buildHeader(),
-                        _buildChart(),
-                        const Text('城市排行', style: TextStyles.textBold18),
-                        ListView.builder(
-                          physics: const ClampingScrollPhysics(),
-                          padding: const EdgeInsets.only(top: 16.0),
-                          shrinkWrap: true,
-                          itemCount: 10,
-                          itemExtent: 76.0,
-                          itemBuilder: (context, index) => _buildItem(index),
-                        ),
-                      ],
-                    );
-                }),
-          ),
-        )
+        body: NotificationListener<ScrollNotification>(
+            child: RefreshIndicator(
+                notificationPredicate: (notifation) {
+                  return true;
+                },
+                displacement: 100.0,
+                onRefresh:_handleRefresh,
+                color: Colors.blue,
+                child:SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    key: _bodyKey,
+                  child: SafeArea(
+                    child: Consumer<RankProvider>(
+                        builder: (_, provider, child) {
+                          return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                //Text(_type ? '已配货' : '最优每日排行榜', style: TextStyles.textBold24),
+                                _buildHeader(),
+                                _buildChart(),
+                                const Text('城市排行', style: TextStyles.textBold18),
+                                ListView.builder(
+                                  physics: const ClampingScrollPhysics(),
+                                  padding: const EdgeInsets.only(top: 16.0),
+                                  shrinkWrap: true,
+                                  itemCount: 10,
+                                  itemExtent: 76.0,
+                                  itemBuilder: (context, index) => _buildItem(index),
+                                ),
+                              ],
+                            );
+                        }),
+                  ),
+        )))
       ),
     );
+  }
+
+  Future<void> _handleRefresh() {
+    final Completer<void> completer = Completer<void>();
+    Timer(const Duration(seconds: 1), () {
+      completer.complete();
+    });
+    return completer.future.then<void>((_) {
+      presenter.initState();
+    });
   }
 
   @override
@@ -140,7 +159,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                   Gaps.hGap16,
                   Text(
                     _sortList[sortIndex],
-                    style: TextStyles.textBold24,
+                    style: TextStyles.textBold18,
                   ),
                   Gaps.hGap8,
                   LoadAssetImage('goods/expand', width: 16.0, height: 16.0, color: _iconColor,)
@@ -201,6 +220,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
 
   Widget _buildItem(int index) {
     City city;
+    final Color _iconColor = ThemeUtils.getIconColor(context);
     List<City> citys = provider.rank?.citys;
     if(citys != null && citys.length > 0){
       city = citys[index];
@@ -227,14 +247,15 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
               Container(
                 height: 30.0,
                 width: 30.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4.0),
-                  border: Border.all(color: const Color(0xFFF7F8FA), width: 0.6),
-                  image: DecorationImage(
-                    image: ImageUtils.getAssetImage('order/${provider.rank?.type == 0 ? 'good':'bad'}'),
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
+                child: LoadAssetImage('order/${provider.rank?.type == 0 ? 'good':'bad'}'),
+                // decoration: BoxDecoration(
+                //   borderRadius: BorderRadius.circular(4.0),
+                //   border: Border.all(color: _iconColor, width: 0.6),
+                //   image: DecorationImage(
+                //     image: ImageUtils.getAssetImage('order/${provider.rank?.type == 0 ? 'good':'bad'}'),
+                //     fit: BoxFit.fitWidth,
+                //   ),
+                // ),
               ),
               Gaps.hGap8,
               Expanded(
