@@ -39,7 +39,6 @@ class MyApp extends StatelessWidget {
     startPosition();//开启位置
     Log.init();
     initDio();
-    checkPersmission();
     Routes.initRoutes();
   }
 
@@ -59,23 +58,6 @@ class MyApp extends StatelessWidget {
       baseUrl: 'http://www.hazer.top/client/api/',
       interceptors: interceptors,
     );
-  }
-
-  //检测权限状态
-  void checkPersmission() async {
-    // 申请权限
-    Map<PermissionGroup, PermissionStatus> permissions =
-    await PermissionHandler().requestPermissions([PermissionGroup.location]);
-    // 申请结果
-    PermissionStatus permission =
-    await PermissionHandler().checkPermissionStatus(PermissionGroup.location);
-    if (permission == PermissionStatus.granted) {
-      getLocation();
-    } else {
-      Toast.show('定位权限申请被拒绝');
-      bool isOpened = await PermissionHandler().openAppSettings();//打开应用设置
-    }
-
   }
 
   startPosition()async{
