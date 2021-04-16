@@ -3,6 +3,8 @@ import 'package:flutter_aqi/generated/json/base/json_filed.dart';
 
 class AqiEntity with JsonConvert<AqiEntity>{
   @JSONField(name: 'envEntity')
+  String name;
+  String loc;
   EvnEntity envEntity;
   List<AqiItem> data;
   List<AqiHourItem> react;

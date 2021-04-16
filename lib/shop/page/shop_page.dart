@@ -132,7 +132,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
       completer.complete();
     });
     return completer.future.then<void>((_) {
-      presenter.initState();
+      presenter.select(provider.sortIndex);
     });
   }
 

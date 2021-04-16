@@ -19,13 +19,33 @@ class AqiCityPresenter extends BasePagePresenter<AqiCityIMvpView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      checkPersmission();
+      String location = SpUtil.getString("location");
+      if(location.isEmpty){
+        checkPersmission();
+      }else{
+        getCityByLocation(location);
+      }
     });
   }
 
   void changeCity(String cityId){
     asyncRequestNetwork<AqiEntity>(Method.get,
       url: sprintf(HttpApi.aqicity,[cityId,'2']),
+      onSuccess: (data) {
+        if (data != null) {
+          view.setAqiEntity(data);
+        } else {
+          /// 加载失败
+          // view.provider.setHasMore(false);
+          // view.provider.setStateType(StateType.network);
+        }
+      },
+    );
+  }
+
+  void getCityByLocation(String location){
+    asyncRequestNetwork<AqiEntity>(Method.get,
+      url: sprintf(HttpApi.aqi_city_location,['2',location]),
       onSuccess: (data) {
         if (data != null) {
           view.setAqiEntity(data);
@@ -61,18 +81,7 @@ class AqiCityPresenter extends BasePagePresenter<AqiCityIMvpView> {
     print(lng.toString()+','+lat.toString());
     if(lat!=null&&lng!=null){
       String location = lng.toString()+','+lat.toString();
-      asyncRequestNetwork<AqiEntity>(Method.get,
-        url: sprintf(HttpApi.aqi_city_location,['2',location]),
-        onSuccess: (data) {
-          if (data != null) {
-            view.setAqiEntity(data);
-          } else {
-            /// 加载失败
-            // view.provider.setHasMore(false);
-            // view.provider.setStateType(StateType.network);
-          }
-        },
-      );
+      getCityByLocation(location);
       SpUtil.putString("location", lng.toString()+','+lat.toString());
     }else{
       Toast.show('获取位置失败，请检测GPS是否开启！');

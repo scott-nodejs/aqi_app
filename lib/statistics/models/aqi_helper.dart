@@ -1,6 +1,8 @@
 import 'package:flutter_aqi/statistics/models/aqi_model.dart';
 
 aqiEntityFromJson(AqiEntity data, Map<String, dynamic> json) {
+  data.name = json['name']?.toString();
+  data.loc = json['loc']?.toString();
   if (json['envEntity'] != null) {
     data.envEntity = new EvnEntity().fromJson(json['envEntity']);
   }

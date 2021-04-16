@@ -22,6 +22,7 @@ import 'package:flutter_aqi/widgets/load_image.dart';
 import 'package:flutter_aqi/widgets/my_card.dart';
 import 'package:flutter_aqi/widgets/my_flexible_space_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:sp_util/sp_util.dart';
 
 
 /// design/5统计/index.html
@@ -33,8 +34,6 @@ class StatisticsPage extends StatefulWidget {
 class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<StatisticsPage, AqiCityPresenter> implements AqiCityIMvpView{
 
   AqiProvider provider = new AqiProvider();
-
-  String _city = '';
 
   @override
   void setAqiEntity(AqiEntity entity) {
@@ -78,6 +77,21 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
     return <Widget>[
       SliverAppBar(
         brightness: Brightness.dark,
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              setState(() {
+                presenter.checkPersmission();
+              });
+            },
+            tooltip: '手动定位',
+            icon: LoadAssetImage('statistic/location',
+              width: 30.0,
+              height: 30.0,
+              color: ThemeUtils.getIconColor(context),
+            ),
+          )
+        ],
         leading: Gaps.empty,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -90,31 +104,39 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
             height: 115.0,
             fit: BoxFit.fill,
           ),
-          centerTitle: true,
+          centerTitle: false,
           titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 14.0),
           collapseMode: CollapseMode.pin,
           title: InkWell(
-              onTap: (){
-                NavigatorUtils.pushResult(context, StatisticsRouter.citySelectPage, (Object result) {
-                  setState(() {
-                    final CityEntity model = result as CityEntity;
-                    _city = model.name;
-                    presenter.changeCity(model.cityCode);
-                  });
-                });
-              },
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    _city.isEmpty ? '北京市' : _city,
-                    style: TextStyle(color: ThemeUtils.getIconColor(context),fontSize:16),
+                  onTap: (){
+                    NavigatorUtils.pushResult(context, StatisticsRouter.citySelectPage, (Object result) {
+                      setState(() {
+                        final CityEntity model = result as CityEntity;
+                        provider.setCode(model.cityCode);
+                        presenter.changeCity(model.cityCode);
+                      });
+                    });
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        entity==null?"北京":entity?.name,
+                        style: TextStyle(color: ThemeUtils.getIconColor(context),fontSize:16),
+                      ),
+                      Gaps.hGap4,
+                      LoadAssetImage('goods/expand', width: 10.0, height: 10.0, color: Color(0xfff1f1f1),),
+                      entity == null ? Text(''): entity.loc == null?Text(''): Row(
+                        children: [
+                          Gaps.hGap10,
+                          LoadAssetImage('statistic/location', width: 10.0, height: 10.0),
+                          Text(entity == null ? "": entity.loc == null?"":entity?.loc,style: TextStyle(fontSize: Dimens.font_sp8, color: ThemeUtils.getIconColor(context)))
+                        ],
+                      )
+                    ],
                   ),
-                  Gaps.hGap4,
-                  LoadAssetImage('goods/expand', width: 10.0, height: 10.0, color: Color(0xfff1f1f1),)
-                ],
-              ),
-          ),
+                ),
+
         ),
       ),
       SliverPersistentHeader(
@@ -189,7 +211,12 @@ class _StatisticsPageState extends State<StatisticsPage> with BasePageMixin<Stat
       completer.complete();
     });
     return completer.future.then<void>((_) {
-      presenter.initState();
+      String code = provider.code;
+      if(code == null){
+        presenter.initState();
+      }else{
+        presenter.changeCity(code);
+      }
     });
   }
 

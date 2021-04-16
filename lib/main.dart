@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_aqi/common/common.dart';
 import 'package:flutter_aqi/home/home_page.dart';
 import 'package:flutter_aqi/localization/app_localizations.dart';
 import 'package:flutter_aqi/provider/locale_provider.dart';
@@ -14,11 +13,11 @@ import 'package:flutter_aqi/utils/device_utils.dart';
 import 'package:flutter_aqi/utils/log_utils.dart';
 import 'package:flutter_aqi/utils/toast.dart';
 import 'package:oktoast/oktoast.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'home/splash_page.dart';
 import 'net/dio_utils.dart';
 import 'net/intercept.dart';
 
@@ -105,7 +104,7 @@ class MyApp extends StatelessWidget {
                 theme: theme ?? provider.getTheme(),
                 darkTheme: provider.getTheme(isDarkMode: true),
                 themeMode: provider.getThemeMode(),
-                home: home ?? Home(),
+                home: home ?? SplashPage(),
                 onGenerateRoute: Routes.router.generator,
                 localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
                   AppLocalizationsDelegate(),
