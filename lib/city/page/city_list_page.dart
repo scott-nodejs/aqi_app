@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/city/models/goods_item_entity.dart';
 import 'package:flutter_aqi/city/provider/city_provider.dart';
@@ -137,7 +135,7 @@ class _GoodsListPageState extends State<GoodsListPage> with AutomaticKeepAliveCl
             setState(() {
               _selectIndex = -1;
             });
-            NavigatorUtils.push(context, '');
+            NavigatorUtils.push(context, CityRouter.cityDetailPage);
           },
           onTapOperation: () {
             Toast.show('下架');

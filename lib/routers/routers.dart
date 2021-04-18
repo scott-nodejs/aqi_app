@@ -5,6 +5,7 @@ import 'package:flutter_aqi/home/home_page.dart';
 import 'package:flutter_aqi/home/webview_page.dart';
 import 'package:flutter_aqi/setting/setting_router.dart';
 import 'package:flutter_aqi/shop/shop_router.dart';
+import 'package:flutter_aqi/city/city_router.dart';
 import 'package:flutter_aqi/statistics/statistics_router.dart';
 
 import 'i_router.dart';
@@ -44,7 +45,7 @@ class Routes {
     // _listRouter.add(GoodsRouter());
     // _listRouter.add(OrderRouter());
     // _listRouter.add(StoreRouter());
-    // _listRouter.add(AccountRouter());
+    _listRouter.add(CityRouter());
     _listRouter.add(SettingRouter());
     _listRouter.add(StatisticsRouter());
   

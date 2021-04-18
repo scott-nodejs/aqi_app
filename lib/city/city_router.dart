@@ -1,9 +1,10 @@
 import 'package:fluro/fluro.dart';
 import 'package:flutter_aqi/routers/i_router.dart';
+import 'package:flutter_aqi/city/page/city_detail_page.dart';
 
 class CityRouter implements IRouterProvider{
 
-  static String orderStatisticsPage = '/statistics/order';
+  static String cityDetailPage = '/city/detail';
   static String goodsStatisticsPage = '/statistics/goods';
   static String citySelectPage = '/statistics/citySelect';
 
@@ -13,7 +14,7 @@ class CityRouter implements IRouterProvider{
     //   final int index = int.parse(params['index']?.first);
     //   return OrderStatisticsPage(index);
     // }));
-    // router.define(goodsStatisticsPage, handler: Handler(handlerFunc: (_, __) => GoodsStatisticsPage()));
+    router.define(cityDetailPage, handler: Handler(handlerFunc: (_, __) => OrderPage()));
     // router.define(citySelectPage, handler: Handler(handlerFunc: (_, __) => CitySelectPage()));
   }
 
