@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/home/provider/home_provider.dart';
+import 'package:flutter_aqi/mapScreen/my_screen.dart';
+import 'package:flutter_aqi/mapScreen/select_address_page.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/shop/page/shop_page.dart';
+import 'package:flutter_aqi/city/page/city_page.dart';
 import 'package:flutter_aqi/statistics/page/statistics_page.dart';
 import 'package:flutter_aqi/utils/double_tap_back_exit_app.dart';
 import 'package:flutter_aqi/utils/theme_utils.dart';
@@ -19,7 +22,7 @@ class _HomeState extends State<Home> {
   static const double _imageSize = 25.0;
 
   List<Widget> _pageList;
-  final List<String> _appBarTitles = ['首页', '排行榜'];
+  final List<String> _appBarTitles = ['首页','地图','城市圈','排行榜'];
   final PageController _pageController = PageController();
 
   HomeProvider provider = HomeProvider();
@@ -42,6 +45,8 @@ class _HomeState extends State<Home> {
   void initData() {
     _pageList = [
       StatisticsPage(),
+      AddressSelectPage(),
+      CityPage(),
       const ShopPage(),
     ];
   }
@@ -52,6 +57,14 @@ class _HomeState extends State<Home> {
         [
           LoadAssetImage('home/icon_statistics', width: _imageSize, color: Colours.unselected_item_color,),
           LoadAssetImage('home/icon_statistics', width: _imageSize, color: Colours.app_main,),
+        ],
+        [
+          LoadAssetImage('home/icon_commodity', width: _imageSize, color: Colours.unselected_item_color,),
+          LoadAssetImage('home/icon_commodity', width: _imageSize, color: Colours.app_main,),
+        ],
+        [
+          LoadAssetImage('home/icon_order', width: _imageSize, color: Colours.unselected_item_color,),
+          LoadAssetImage('home/icon_order', width: _imageSize, color: Colours.app_main,),
         ],
         [
           LoadAssetImage('home/icon_shop', width: _imageSize, color: Colours.unselected_item_color,),
@@ -75,6 +88,14 @@ class _HomeState extends State<Home> {
         [
           LoadAssetImage('home/icon_statistics', width: _imageSize),
           LoadAssetImage('home/icon_statistics', width: _imageSize, color: Colours.dark_app_main,),
+        ],
+        [
+          LoadAssetImage('home/icon_commodity', width: _imageSize),
+          LoadAssetImage('home/icon_commodity', width: _imageSize, color: Colours.dark_app_main,),
+        ],
+        [
+          LoadAssetImage('home/icon_order', width: _imageSize),
+          LoadAssetImage('home/icon_order', width: _imageSize, color: Colours.dark_app_main,),
         ],
         [
           LoadAssetImage('home/icon_shop', width: _imageSize),
