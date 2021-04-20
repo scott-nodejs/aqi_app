@@ -45,7 +45,7 @@ class _HomeState extends State<Home> {
   void initData() {
     _pageList = [
       StatisticsPage(),
-      AddressSelectPage(),
+      CreateMapScreen(),
       CityPage(),
       const ShopPage(),
     ];

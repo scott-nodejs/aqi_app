@@ -66,6 +66,7 @@ dependencies:
   charts_flutter: ^0.10.0
   amap_location: ^0.2.0
   permission_handler: ^3.2.0
+  flutter_map: ^0.8.2
   #amap_map_fluttify: ^0.30.1
 
 

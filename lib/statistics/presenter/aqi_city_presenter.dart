@@ -83,6 +83,8 @@ class AqiCityPresenter extends BasePagePresenter<AqiCityIMvpView> {
       String location = lng.toString()+','+lat.toString();
       getCityByLocation(location);
       SpUtil.putString("location", lng.toString()+','+lat.toString());
+      SpUtil.putDouble("lat", lat);
+      SpUtil.putDouble("lng", lng);
     }else{
       Toast.show('获取位置失败，请检测GPS是否开启！');
     }

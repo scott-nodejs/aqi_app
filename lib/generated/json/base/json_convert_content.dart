@@ -6,6 +6,8 @@
 import 'package:flutter_aqi/account/models/bank_entity.dart';
 import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/generated/json/city_entity_helper.dart';
+import 'package:flutter_aqi/mapScreen/models/map_helper.dart';
+import 'package:flutter_aqi/mapScreen/models/map_model.dart';
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
 import 'package:flutter_aqi/generated/json/rank_entity_helper.dart';
 import 'package:flutter_aqi/statistics/models/aqi_helper.dart';
@@ -38,6 +40,10 @@ class JsonConvert<T> {
         return cityFromJson(data as City, json);
       case RankItem:
         return rankItemFromJson(data as RankItem, json);
+      case MapEntity:
+        return mapEntityFromJson(data as MapEntity, json);
+      case MapItem:
+        return mapItemFromJson(data as MapItem, json);
     }
     return data as T;
   }
@@ -56,6 +62,8 @@ class JsonConvert<T> {
         return AqiEntity().fromJson(json);
       case 'RankEntity':
         return RankEntity().fromJson(json);
+      case 'MapEntity':
+        return MapEntity().fromJson(json);
     }
     return null;
   }
