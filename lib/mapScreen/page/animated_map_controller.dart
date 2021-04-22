@@ -24,13 +24,17 @@ class AnimatedMapControllerPage extends StatefulWidget {
 class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
     with TickerProviderStateMixin,BasePageMixin<AnimatedMapControllerPage, MapPresenter> implements MapIMvpView{
 
-  static LatLng london = LatLng(39.954592,116.468117);
-  static LatLng paris = LatLng(22.543099,114.057868);
-  static LatLng dublin = LatLng(31.2047372,121.4489017);
+  static LatLng beijing = LatLng(39.954592,116.468117);
+  static LatLng shenzhen = LatLng(22.543099,114.057868);
+  static LatLng shanghai = LatLng(31.2047372,121.4489017);
+  static LatLng chengdu = LatLng(30.6250145,104.0670559);
+  static LatLng xiamen = LatLng(24.479834,118.089425);
 
   MapController mapController;
 
   double lat = 0, long = 0;
+
+  bool isDark;
 
   MapProvider provider = new MapProvider();
 
@@ -76,42 +80,55 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
 
   @override
   Widget build(BuildContext context) {
-
+    isDark = context.isDark;
     return ChangeNotifierProvider<MapProvider>(
         create: (_) => provider,
         child: Scaffold(
-          appBar: AppBar(title: Text('地图看AQI',style: TextStyle(fontSize: 18, color: ThemeUtils.getIconColor(context)))),
+          appBar: AppBar(title: Center(child: Text('地图看AQI',style: TextStyle(fontSize: 16, color: isDark ? Colors.white: Colors.black)))),
           //drawer: buildDrawer(context, AnimatedMapControllerPage.route),
           body: Consumer<MapProvider>(
               builder: (_, provider, __) {
                 lat = SpUtil.getDouble("lat");
                 long = SpUtil.getDouble("lng");
                 return Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(0.0),
                         child: Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
+                              padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: <Widget>[
                                   MaterialButton(
                                     onPressed: () {
-                                      _animatedMapMove(london, 10.0);
+                                      _animatedMapMove(beijing, 10.0);
                                     },
                                     child: Text('北京'),
                                   ),
                                   MaterialButton(
                                     onPressed: () {
-                                      _animatedMapMove(paris, 10.0);
+                                      _animatedMapMove(shenzhen, 10.0);
                                     },
                                     child: Text('深圳'),
                                   ),
                                   MaterialButton(
                                     onPressed: () {
-                                      _animatedMapMove(dublin, 10.0);
+                                      _animatedMapMove(shanghai, 10.0);
                                     },
                                     child: Text('上海'),
                                   ),
+                                  MaterialButton(
+                                    onPressed: () {
+                                      _animatedMapMove(chengdu, 10.0);
+                                    },
+                                    child: Text('成都'),
+                                  ),
+                                  // MaterialButton(
+                                  //   onPressed: () {
+                                  //     _animatedMapMove(xiamen, 10.0);
+                                  //   },
+                                  //   child: Text('厦门'),
+                                  // ),//
                                 ],
                               ),
                             ),

@@ -8,4 +8,5 @@ class HttpApi{
   static const String aqi_city_location = 'getAqiByCity/%s?location=%s';
   static const String rank = 'getRankByCity?type=%s';
   static const String get_map_aqi = 'getMap';
+  static const String city_Q_list = 'cityQ/list/%s';
 }

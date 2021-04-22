@@ -1,6 +1,7 @@
 
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/city/models/city_item_entity.dart';
 import 'package:flutter_aqi/city/models/goods_item_entity.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/utils/theme_utils.dart';
@@ -26,7 +27,7 @@ class GoodsItem extends StatelessWidget {
     @required this.animation
   }): super(key: key);
 
-  final GoodsItemEntity item;
+  final CityItemEntity item;
   final int index;
   final int selectIndex;
   final VoidCallback onTapMenu;
@@ -41,14 +42,14 @@ class GoodsItem extends StatelessWidget {
     final Row child = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        ExcludeSemantics(child: LoadImage(item.icon, width: 72.0, height: 72.0)),
+        ExcludeSemantics(child: LoadImage(item.cityThumb, width: 72.0, height: 72.0)),
         Gaps.hGap8,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text(
-                '八月十五中秋月饼礼盒',
+              Text(
+                item.city,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -57,15 +58,15 @@ class GoodsItem extends StatelessWidget {
                 children: <Widget>[
                   Visibility(
                     // 默认为占位替换，类似于gone
-                    visible: item.type % 3 == 0,
+                    visible: true,
                     child: _GoodsItemTag(
-                      text: '立减',
+                      text: '首都',
                       color: Theme.of(context).errorColor,
                     ),
                   ),
                   Opacity(
                     // 修改透明度实现隐藏，类似于invisible
-                    opacity: item.type % 2 != 0 ? 0.0 : 1.0,
+                    opacity: 0.0,
                     child: _GoodsItemTag(
                       text: '社区币抵扣',
                       color: Theme.of(context).primaryColor,
@@ -74,7 +75,7 @@ class GoodsItem extends StatelessWidget {
                 ],
               ),
               Gaps.vGap16,
-              Text(Utils.formatPrice('20.00', format: MoneyFormat.NORMAL))
+              Text(item.feature)
             ],
           ),
         ),
@@ -100,7 +101,7 @@ class GoodsItem extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(top: 10.0),
               child: Text(
-                '特产美味',
+                item.province,
                 style: Theme.of(context).textTheme.subtitle2,
               ),
             )

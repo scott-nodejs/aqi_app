@@ -1,15 +1,21 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/city/models/city_item_entity.dart';
+import 'package:flutter_aqi/city/models/city_result.dart';
 import 'package:flutter_aqi/city/models/goods_item_entity.dart';
-import 'package:flutter_aqi/city/provider/city_provider.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
 import 'package:flutter_aqi/routers/fluro_navigator.dart';
 import 'package:flutter_aqi/utils/toast.dart';
 import 'package:flutter_aqi/widgets/my_refresh_list.dart';
 import 'package:flutter_aqi/widgets/state_layout.dart';
 import 'package:provider/provider.dart';
+import 'package:sprintf/sprintf.dart';
 
 import '../city_router.dart';
 import '../widgets/goods_delete_bottom_sheet.dart';
 import '../widgets/goods_item.dart';
+import 'package:flutter_aqi/mvp/base_page_presenter.dart';
 
 class GoodsListPage extends StatefulWidget {
   
@@ -24,12 +30,12 @@ class GoodsListPage extends StatefulWidget {
   _GoodsListPageState createState() => _GoodsListPageState();
 }
 
-class _GoodsListPageState extends State<GoodsListPage> with AutomaticKeepAliveClientMixin<GoodsListPage>, SingleTickerProviderStateMixin {
+class _GoodsListPageState extends State<GoodsListPage> with  SingleTickerProviderStateMixin {
   
   int _selectIndex = -1;
   Animation<double> _animation;
   AnimationController _controller;
-  List<GoodsItemEntity> _list = [];
+  List<CityItemEntity> _list = [];
   AnimationStatus _animationStatus = AnimationStatus.dismissed;
   
   @override
@@ -44,9 +50,11 @@ class _GoodsListPageState extends State<GoodsListPage> with AutomaticKeepAliveCl
     });
 
     //Item数量
-    _maxPage = widget.index == 0 ? 1 : (widget.index == 1 ? 2 : 3);
+    _maxPage = 1;
 
-    _onRefresh();
+    _getCityQByClient(widget.index);
+
+    // _onRefresh();
   }
 
   @override
@@ -68,18 +76,38 @@ class _GoodsListPageState extends State<GoodsListPage> with AutomaticKeepAliveCl
     await Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _page = 1;
-        _list = List.generate(widget.index == 0 ? 3 : 10, (i) =>
-            GoodsItemEntity(icon: _imgList[i % 6], title: '八月十五中秋月饼礼盒', type: i % 3));
+        // _list = List.generate(widget.index == 0 ? 3 : 10, (i) =>
+        //     GoodsItemEntity(icon: _imgList[i % 6], title: '八月十五中秋月饼礼盒', type: i % 3));
       });
       _setGoodsCount(_list.length);
     });
   }
 
+  void _getCityQByClient(int type) async{
+    String url = sprintf(HttpApi.city_Q_list,[type+1]);
+    DioUtils.instance.asyncRequestNetwork<CityResult>(Method.get, url,
+      params: '',
+      queryParameters: {},
+      onSuccess: (data) {
+          setState(() {
+            if(data != null && data.citys != null){
+              _list.addAll(data.citys);
+            }
+          });
+          _setGoodsCount(_list.length);
+      },
+      onError: (code, msg) {
+
+      },
+    );
+
+  }
+
   Future _loadMore() async {
     await Future.delayed(const Duration(seconds: 2), () {
       setState(() {
-        _list.addAll(List.generate(10, (i) =>
-            GoodsItemEntity(icon: _imgList[i % 6], title: '八月十五中秋月饼礼盒', type: i % 3)));
+        // _list.addAll(List.generate(10, (i) =>
+        //     GoodsItemEntity(icon: _imgList[i % 6], title: '八月十五中秋月饼礼盒', type: i % 3)));
         _page ++;
       });
       _setGoodsCount(_list.length);
@@ -98,60 +126,65 @@ class _GoodsListPageState extends State<GoodsListPage> with AutomaticKeepAliveCl
   
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    return aqiListView(
-      itemCount: _list.length,
-      stateType: _stateType,
-      onRefresh: _onRefresh,
-      loadMore: _loadMore,
-      hasMore: _page < _maxPage,
-      itemBuilder: (_, index) {
-        return GoodsItem(
-          index: index,
-          selectIndex: _selectIndex,
-          item: _list[index],
-          animation: _animation,
-          onTapMenu: () {
-            /// 点击其他item时，重置状态
-            if (_selectIndex != index) {
-              _animationStatus = AnimationStatus.dismissed;
-            }
-            /// 避免动画中重复执行
-            if (_animationStatus == AnimationStatus.dismissed) {
-              // 开始执行动画
-              _controller.forward(from: 0.0);
-            }
-            setState(() {
-              _selectIndex = index;
-            });
-          },
-          onTapMenuClose: () {
-            if (_animationStatus == AnimationStatus.completed) {
-              _controller.reverse(from: 1.1);
-            }
-            _selectIndex = -1;
-          },
-          onTapEdit: () {
-            setState(() {
-              _selectIndex = -1;
-            });
-            NavigatorUtils.push(context, CityRouter.cityDetailPage);
-          },
-          onTapOperation: () {
-            Toast.show('下架');
-          },
-          onTapDelete: () {
-            _controller.reverse(from: 1.1);
-            _selectIndex = -1;
-            _showDeleteBottomSheet(index);
-          },
-        );
-      }
+    //super.build(context);
+    return GestureDetector(
+      onTap: (){
+        NavigatorUtils.push(context, CityRouter.cityDetailPage);
+      },
+      child: aqiListView(
+          itemCount: _list.length,
+          stateType: _stateType,
+          onRefresh: _onRefresh,
+          loadMore: null,
+          hasMore: _page < _maxPage,
+          itemBuilder: (_, index) {
+            return GoodsItem(
+              index: index,
+              selectIndex: _selectIndex,
+              item: _list[index],
+              animation: _animation,
+              onTapMenu: () {
+                /// 点击其他item时，重置状态
+                if (_selectIndex != index) {
+                  _animationStatus = AnimationStatus.dismissed;
+                }
+                /// 避免动画中重复执行
+                if (_animationStatus == AnimationStatus.dismissed) {
+                  // 开始执行动画
+                  _controller.forward(from: 0.0);
+                }
+                setState(() {
+                  _selectIndex = index;
+                });
+              },
+              onTapMenuClose: () {
+                if (_animationStatus == AnimationStatus.completed) {
+                  _controller.reverse(from: 1.1);
+                }
+                _selectIndex = -1;
+              },
+              onTapEdit: () {
+                setState(() {
+                  _selectIndex = -1;
+                });
+                NavigatorUtils.push(context, CityRouter.cityDetailPage);
+              },
+              onTapOperation: () {
+                Toast.show('下架');
+              },
+              onTapDelete: () {
+                _controller.reverse(from: 1.1);
+                _selectIndex = -1;
+                _showDeleteBottomSheet(index);
+              },
+            );
+          }
+      ),
     );
   }
 
-  @override
-  bool get wantKeepAlive => true;
+  // @override
+  // bool get wantKeepAlive => false;
 
   void _showDeleteBottomSheet(int index) {
     showModalBottomSheet<void>(
