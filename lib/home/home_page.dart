@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/home/provider/home_provider.dart';
 import 'package:flutter_aqi/mapScreen/my_screen.dart';
+import 'package:flutter_aqi/mapScreen/page/animated_map_controller.dart';
 import 'package:flutter_aqi/mapScreen/select_address_page.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/shop/page/shop_page.dart';
@@ -45,7 +46,7 @@ class _HomeState extends State<Home> {
   void initData() {
     _pageList = [
       StatisticsPage(),
-      CreateMapScreen(),
+      AnimatedMapControllerPage(),
       CityPage(),
       const ShopPage(),
     ];

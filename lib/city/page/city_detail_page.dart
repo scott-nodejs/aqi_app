@@ -120,11 +120,11 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
           backgroundColor: Colors.transparent,
           elevation: 0.0,
           centerTitle: true,
-          expandedHeight: 100.0,
+          expandedHeight: 113.0,
           floating: false, // 不随着滑动隐藏标题
           pinned: true, // 固定在顶部
           flexibleSpace: MyFlexibleSpaceBar(
-            background: isDark ? Container(height: 113.0, color: Colours.dark_bg_color,) : LoadAssetImage('order/order_bg',
+            background: isDark ? Container(height: 113.0, color: Colours.dark_bg_color,) : LoadAssetImage('order/beijing',
               width: context.width,
               height: 113.0,
               fit: BoxFit.fill,
@@ -132,7 +132,7 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
             centerTitle: true,
             titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 14.0),
             collapseMode: CollapseMode.pin,
-            title: Text('订单', style: TextStyle(color: ThemeUtils.getIconColor(context)),),
+            title: Text(''),
           ),
         ),
       ),
@@ -148,39 +148,56 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 0.0),
               child: MyCard(
                 child: Container(
-                  height: 80.0,
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: TabBar(
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 0),
-                    controller: _tabController,
-                    labelColor: context.isDark ? Colours.dark_text : Colours.text,
-                    unselectedLabelColor: context.isDark ? Colours.dark_text_gray : Colours.text,
-                    labelStyle: TextStyles.textBold14,
-                    unselectedLabelStyle: const TextStyle(
-                      fontSize: Dimens.font_sp14,
-                    ),
-                    indicatorColor: Colors.transparent,
-                    tabs: const <Widget>[
-                      _TabView(0, '新订单'),
-                      _TabView(1, '待配送'),
-                      _TabView(2, '待完成'),
-                      _TabView(3, '已完成'),
-                      _TabView(4, '已取消'),
-                    ],
-                    onTap: (index) {
-                      if (!mounted) {
-                        return;
-                      }
-                      _pageController.jumpToPage(index);
-                    },
+                  height: 180.0,
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 19.0),
+                          child: Text('北京',style: TextStyle(fontSize: Dimens.font_sp18),),
+                        ),
+                        Gaps.vGap8,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 19.0),
+                          child: Text('简称“京”，是中华人民共和国的首都及直辖市，中国大陆的政治、文化、科技和国际交往中心，是世界人口第三多的城市和人口最多的首都，具有重要的国际影响力[4]。北京位于华北平原的西北边缘，背靠燕山，有永定河流经老城西南，毗邻天津市、河北省，为京津冀城市群的重要组成部分',
+                                       maxLines: 3,
+                                       style: Theme.of(context).textTheme.subtitle2),
+                        ),
+                        Gaps.vGap12,
+                        TabBar(
+                          labelPadding: const EdgeInsets.symmetric(horizontal: 0),
+                          controller: _tabController,
+                          labelColor: context.isDark ? Colours.dark_text : Colours.text,
+                          unselectedLabelColor: context.isDark ? Colours.dark_text_gray : Colours.text,
+                          labelStyle: TextStyles.textBold14,
+                          unselectedLabelStyle: const TextStyle(
+                            fontSize: Dimens.font_sp14,
+                          ),
+                          indicatorColor: Colors.transparent,
+                          tabs: const <Widget>[
+                            _TabView(0, '住房'),
+                            _TabView(1, '景点'),
+                            _TabView(2, '攻略'),
+                            _TabView(3, '教育'),
+                            _TabView(4, '医院'),
+                          ],
+                          onTap: (index) {
+                            if (!mounted) {
+                              return;
+                            }
+                            _pageController.jumpToPage(index);
+                          },
+                        ),
+                      ],
                   ),
                 ),
               ),
             ),
-          ), 80.0,
+          ), 180.0,
         ),
       ),
     ];
@@ -195,11 +212,11 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
 }
 
 List<List<String>> img = [
-  ['order/xdd_s', 'order/xdd_n'],
-  ['order/dps_s', 'order/dps_n'],
-  ['order/dwc_s', 'order/dwc_n'],
-  ['order/ywc_s', 'order/ywc_n'],
-  ['order/yqx_s', 'order/yqx_n']
+  ['city/fz', 'city/fz'],
+  ['city/fj', 'city/fj'],
+  ['city/book', 'city/book'],
+  ['city/job', 'city/job'],
+  ['city/his', 'city/his']
 ];
 
 List<List<String>> darkImg = [
@@ -223,7 +240,7 @@ class _TabView extends StatelessWidget {
     return Stack(
       children: <Widget>[
         Container(
-          width: 46.0,
+          width: 36.0,
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -233,13 +250,13 @@ class _TabView extends StatelessWidget {
               imgList[index][0] : 
               imgList[index][1], width: 24.0, height: 24.0,),
               Gaps.vGap4,
-              Text(text),
+              Text(text,style: TextStyle(fontSize: Dimens.font_sp14),),
             ],
           ),
         ),
         Positioned(
           right: 0.0,
-          child: index < 3 ? DecoratedBox(
+          child: index < 0 ? DecoratedBox(
             decoration: BoxDecoration(
               color: Theme.of(context).errorColor,
               borderRadius: BorderRadius.circular(11.0),

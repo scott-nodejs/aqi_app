@@ -22,8 +22,6 @@ class _CreateMapScreenState extends State<CreateMapScreen> with BasePageMixin<Cr
   MapController _controller;
   double lat = 0, long = 0;
 
-  bool pinClicked = false;
-
   MapProvider provider = new MapProvider();
 
   @override
@@ -54,7 +52,7 @@ class _CreateMapScreenState extends State<CreateMapScreen> with BasePageMixin<Cr
                               ),
                             ],
                           ),
-                          pinClicked
+                          provider.pinClicked
                               ? Container(
                             margin: EdgeInsets.symmetric(
                                 vertical: 60, horizontal: 20),
@@ -82,7 +80,7 @@ class _CreateMapScreenState extends State<CreateMapScreen> with BasePageMixin<Cr
     if(entity != null){
       List<MapItem> items = entity.items;
       for (MapItem _location in items) {
-           if(_location.g[0] == lat || _location.g[1] == long){
+           if(_location.g[0] == provider.lat || _location.g[1] == provider.long){
              location = _location;
            }
       }
@@ -98,29 +96,26 @@ class _CreateMapScreenState extends State<CreateMapScreen> with BasePageMixin<Cr
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            location.name != null
+            location != null
                 ? Text(
-              location.name,
+              location?.name,
               style: TextStyle(
                   color: Colors.black, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             )
                 : Container(),
-            location.updatetime != null
+            location != null
                 ? Text(
-              '更新于 '+location.updatetime,
+              '更新于 '+location?.updatetime,
               style: TextStyle(
                   color: Colors.black, fontSize: 10),
-              textAlign: TextAlign.center,
             )
                 : Container(),
             RaisedButton(
                 color: Colors.red,
                 child: Text("关闭"),
                 onPressed: () {
-                  setState(() {
-                    pinClicked = false;
-                  });
+                  provider.setPinClicked(false);
                 })
           ],
         ),
@@ -156,11 +151,9 @@ class _CreateMapScreenState extends State<CreateMapScreen> with BasePageMixin<Cr
                   ),
               ),
               onTap: (){
-                setState(() {
-                  pinClicked = true;
-                  lat = location.g[0];
-                  long = location.g[1];
-                });
+                provider.setPinClicked(true);
+                provider.setLat(location.g[0]);
+                provider.setLong(location.g[1]);
               },
             )
           ),
