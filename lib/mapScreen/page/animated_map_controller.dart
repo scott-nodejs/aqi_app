@@ -177,16 +177,16 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
   }
 
   Widget showContainer() {
-    MapEntity entity = provider.entity;
-    MapItem location;
-    if(entity != null){
-      List<MapItem> items = entity.items;
-      for (MapItem _location in items) {
-        if(_location.g[0] == provider.lat || _location.g[1] == provider.long){
-          location = _location;
-        }
-      }
-    }
+    // MapEntity entity = provider.entity;
+    // MapItem location;
+    // if(entity != null){
+    //   List<MapItem> items = entity.items;
+    //   for (MapItem _location in items) {
+    //     if(_location.g[0] == provider.lat || _location.g[1] == provider.long){
+    //       location = _location;
+    //     }
+    //   }
+    // }
     return Center(
       child: Container(
         decoration: BoxDecoration(
@@ -198,17 +198,17 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            location != null
+            provider.name != null
                 ? Text(
-              location?.name,
+              provider.name,
               style: TextStyle(
                   color: Colors.black, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             )
                 : Container(),
-            location != null
+            provider.updatetime != null
                 ? Text(
-              '更新于 '+location?.updatetime,
+              '更新于 '+provider?.updatetime,
               style: TextStyle(
                   color: Colors.black, fontSize: 10),
                 textAlign: TextAlign.center
@@ -254,9 +254,12 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                   ),
                 ),
                 onTap: (){
+                  _animatedMapMove(LatLng(location.g[0],location.g[1]), 10.0);
                   provider.setPinClicked(true);
                   provider.setLat(location.g[0]);
                   provider.setLong(location.g[1]);
+                  provider.setName(location.name);
+                  provider.setUpdatetime(location.updatetime);
                 },
               )
           ),

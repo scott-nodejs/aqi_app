@@ -20,7 +20,7 @@ class AqiCityPresenter extends BasePagePresenter<AqiCityIMvpView> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       String location = SpUtil.getString("location");
-      if(location.isEmpty){
+      if(location == null || location.isEmpty){
         checkPersmission();
       }else{
         getCityByLocation(location);
@@ -79,7 +79,7 @@ class AqiCityPresenter extends BasePagePresenter<AqiCityIMvpView> {
     var lat = d.latitude;
     var lng = d.longitude;
     print(lng.toString()+','+lat.toString());
-    if(lat!=null&&lng!=null){
+    if(lat!=null && lng!=null){
       String location = lng.toString()+','+lat.toString();
       getCityByLocation(location);
       SpUtil.putString("location", lng.toString()+','+lat.toString());
