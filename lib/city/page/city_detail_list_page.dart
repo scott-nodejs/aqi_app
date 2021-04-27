@@ -1,21 +1,29 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/city/models/cityq_detail_entity.dart';
+import 'package:flutter_aqi/city/models/trade_entity.dart';
 import 'package:flutter_aqi/city/provider/order_page_provider.dart';
 import 'package:flutter_aqi/city/widgets/order_item.dart';
 import 'package:flutter_aqi/city/widgets/order_tag_item.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
 import 'package:flutter_aqi/utils/change_notifier_manage.dart';
 import 'package:flutter_aqi/widgets/my_refresh_list.dart';
 import 'package:flutter_aqi/widgets/state_layout.dart';
 import 'package:provider/provider.dart';
+import 'package:sprintf/sprintf.dart';
 
 class OrderListPage extends StatefulWidget {
 
-  const OrderListPage({
+  OrderListPage({
     Key key,
     @required this.index,
+    @required this.uid,
   }): super(key: key);
 
   final int index;
+
+  int uid;
   
   @override
   _OrderListPageState createState() => _OrderListPageState();
@@ -27,16 +35,19 @@ class _OrderListPageState extends State<OrderListPage> with AutomaticKeepAliveCl
   final StateType _stateType = StateType.loading;
   /// 是否正在加载数据
   bool _isLoading = false;
-  final int _maxPage = 3;
+  int _maxPage = 3;
   int _page = 1;
   int _index = 0;
   List<String> _list = <String>[];
+
+  List<dynamic> _list1 = <dynamic>[];
   
   @override
   void initState() {
     super.initState();
     _index = widget.index;
-    _onRefresh();
+    _getTradeList(widget.uid);
+    //_onRefresh();
   }
 
   @override
@@ -75,17 +86,19 @@ class _OrderListPageState extends State<OrderListPage> with AutomaticKeepAliveCl
           },
           child: SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            sliver: _list.isEmpty ? SliverFillRemaining(child: StateLayout(type: _stateType)) :
+            sliver: _list1.isEmpty ? SliverFillRemaining(child: StateLayout(type: _stateType)) :
             SliverList(
               delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-                return index < _list.length ? 
-                (index % 5 == 0 ? 
-                    const OrderTagItem(date: '2020年2月5日', orderTotal: 4) :
-                    OrderItem(key: Key('order_item_$index'), index: index, tabIndex: _index,)
-                ) : 
-                MoreWidget(_list.length, _hasMore(), 10);
+                return index < _list1.length ?
+                OrderItem(key: Key('order_item_$index'), index: index, tabIndex: _index, list: _list1,)
+                // (index % 5 == 0 ?
+                //     const OrderTagItem(date: '2020年2月5日', orderTotal: 4) :
+                //     OrderItem(key: Key('order_item_$index'), index: index, tabIndex: _index,)
+                // )
+                :
+                MoreWidget(_list1.length, _hasMore(), 10);
               },
-              childCount: _list.length + 1),
+              childCount: _list1.length + 1),
             ),
           ),
         ),
@@ -94,12 +107,50 @@ class _OrderListPageState extends State<OrderListPage> with AutomaticKeepAliveCl
   }
 
   Future<void> _onRefresh() async {
-    await Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _page = 1;
-        _list = List.generate(10, (i) => 'newItem：$i');
-      });
+    setState(() {
+      _page = 1;
+      _list1.clear();
     });
+    _getTradeList(widget.uid);
+  }
+
+  void _getTradeList(int id) async{
+    String url = sprintf(HttpApi.trade_list,[id,_page]);
+    DioUtils.instance.asyncRequestNetwork<CityqDetailEntity>(Method.get, url,
+      params: '',
+      queryParameters: {},
+      onSuccess: (data) {
+        setState(() {
+          switch(widget.index){
+            case 0:
+              _list1 = List.generate(10, (i) => 'newItem：$i');
+              return _list1;
+            case 1:
+              if(data != null && data.trades != null){
+                _maxPage = data.trades.maxpage;
+                _list1.addAll(data.trades.cityQWapper);
+              }
+              return _list1;
+            case 2:
+              if(data != null && data.raiders != null){
+                _maxPage = data.trades.maxpage;
+                _list1.addAll(data.raiders.cityQWapper);
+              }
+              return _list1;
+            case 3:
+              _list1 = List.generate(10, (i) => 'newItem：$i');
+              return _list1;
+            case 4:
+              _list1 = List.generate(10, (i) => 'newItem：$i');
+              return _list1;
+          }
+        });
+      },
+      onError: (code, msg) {
+
+      },
+    );
+
   }
 
   bool _hasMore() {
@@ -114,13 +165,11 @@ class _OrderListPageState extends State<OrderListPage> with AutomaticKeepAliveCl
       return;
     }
     _isLoading = true;
-    await Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _list.addAll(List.generate(10, (i) => 'newItem：$i'));
-        _page ++;
-        _isLoading = false;
-      });
+    setState(() {
+      _page ++;
+      _isLoading = false;
     });
+    _getTradeList(widget.uid);
   }
   
   @override

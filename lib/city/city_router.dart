@@ -14,7 +14,10 @@ class CityRouter implements IRouterProvider{
     //   final int index = int.parse(params['index']?.first);
     //   return OrderStatisticsPage(index);
     // }));
-    router.define(cityDetailPage, handler: Handler(handlerFunc: (_, __) => OrderPage()));
+    router.define(cityDetailPage, handler: Handler(handlerFunc: (_, params){
+      final int uid = int.parse(params['uid']?.first);
+      return OrderPage(uid: uid);
+    }));
     // router.define(citySelectPage, handler: Handler(handlerFunc: (_, __) => CitySelectPage()));
   }
 

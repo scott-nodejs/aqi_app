@@ -54,25 +54,13 @@ class MyApp extends StatelessWidget {
     /// 适配数据(根据自己的数据结构，可自行选择添加)
     interceptors.add(AdapterInterceptor());
     configDio(
-      baseUrl: 'http://www.hazer.top/client/api/',
+      baseUrl: 'http://10.90.128.67:9090/client/api/',
       interceptors: interceptors,
     );
   }
 
   startPosition()async{
     await AMapLocationClient.startup(new AMapLocationOption( desiredAccuracy:CLLocationAccuracy.kCLLocationAccuracyHundredMeters  ));
-  }
-
-  getLocation()async{
-    print("准备 获取 GPS");
-    AMapLocation d = await AMapLocationClient.getLocation(true);
-    var lat = d.latitude;
-    var lng = d.longitude;
-    if(lat!=null&&lng!=null){
-      SpUtil.putString("location", lng.toString()+','+lat.toString());
-    }else{
-      Toast.show('获取位置失败，请检测GPS是否开启！');
-    }
   }
 
   @override

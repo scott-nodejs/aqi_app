@@ -1,8 +1,12 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/city/models/city_item_entity.dart';
+import 'package:flutter_aqi/city/models/cityq_detail_entity.dart';
 import 'package:flutter_aqi/city/page/city_detail_list_page.dart';
 import 'package:flutter_aqi/city/provider/order_page_provider.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/routers/fluro_navigator.dart';
 import 'package:flutter_aqi/utils/image_utils.dart';
@@ -12,12 +16,18 @@ import 'package:flutter_aqi/widgets/load_image.dart';
 import 'package:flutter_aqi/widgets/my_card.dart';
 import 'package:flutter_aqi/widgets/my_flexible_space_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:sprintf/sprintf.dart';
 
 //import '../order_router.dart';
 
 
 /// design/3订单/index.html
 class OrderPage extends StatefulWidget {
+
+  int uid;
+
+  OrderPage({Key key, this.uid}):super(key: key);
+
   @override
   _OrderPageState createState() => _OrderPageState();
 }
@@ -31,15 +41,38 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
   OrderPageProvider provider = OrderPageProvider();
 
   int _lastReportedPage = 0;
+
+  CityItemEntity entity;
+
   
   @override
   void initState() {
     super.initState();
+    _getCity();
     _tabController = TabController(vsync: this, length: 5);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       /// 预先缓存剩余切换图片
       _preCacheImage();
     });
+  }
+
+  void _getCity() async{
+    String url = sprintf(HttpApi.get_one_city,[widget.uid]);
+    DioUtils.instance.asyncRequestNetwork<CityItemEntity>(Method.get, url,
+      params: '',
+      queryParameters: {},
+      onSuccess: (data) {
+        setState(() {
+          if(data != null){
+            entity = data;
+          }
+        });
+      },
+      onError: (code, msg) {
+
+      },
+    );
+
   }
 
   void _preCacheImage() {
@@ -100,7 +133,7 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
                   key: const Key('pageView'),
                   itemCount: 5,
                   controller: _pageController,
-                  itemBuilder: (_, index) => OrderListPage(index: index),
+                  itemBuilder: (_, index) => OrderListPage(index: index, uid: widget.uid,),
                 ),
               ),
             ),
@@ -124,10 +157,24 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
           floating: false, // 不随着滑动隐藏标题
           pinned: true, // 固定在顶部
           flexibleSpace: MyFlexibleSpaceBar(
-            background: isDark ? Container(height: 113.0, color: Colours.dark_bg_color,) : LoadAssetImage('order/beijing',
-              width: context.width,
-              height: 113.0,
-              fit: BoxFit.fill,
+            background: isDark ? Container(height: 113.0, color: Colours.dark_bg_color,) :
+            // LoadAssetImage('order/beijing',
+            //   width: context.width,
+            //   height: 113.0,
+            //   fit: BoxFit.fill,
+            // ),
+            Container(
+                height: 113.0,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(0),
+                    image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: NetworkImage(
+                            entity.cityThumb != null? entity?.cityThumb :
+                            'http://b1-q.mafengwo.net/s11/M00/36/36/wKgBEFrhb3SAN3dcABAft7C2kYs76.jpeg?imageMogr2%2Fthumbnail%2F%21305x183r%2Fgravity%2FCenter%2Fcrop%2F%21305x183%2Fquality%2F100'
+                        )
+                    )
+                )
             ),
             centerTitle: true,
             titlePadding: const EdgeInsetsDirectional.only(start: 16.0, bottom: 14.0),
@@ -158,7 +205,7 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
                       children: [
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 19.0),
-                          child: Text('北京',style: TextStyle(fontSize: Dimens.font_sp18),),
+                          child: Text(entity != null ? entity.city : "",style: TextStyle(fontSize: Dimens.font_sp18),),
                         ),
                         Gaps.vGap8,
                         Padding(

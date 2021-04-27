@@ -127,18 +127,18 @@ class _GoodsListPageState extends State<GoodsListPage> with  SingleTickerProvide
   @override
   Widget build(BuildContext context) {
     //super.build(context);
-    return GestureDetector(
-      onTap: (){
-        NavigatorUtils.push(context, CityRouter.cityDetailPage);
-      },
-      child: aqiListView(
+    return aqiListView(
           itemCount: _list.length,
           stateType: _stateType,
           onRefresh: _onRefresh,
           loadMore: null,
           hasMore: _page < _maxPage,
           itemBuilder: (_, index) {
-            return GoodsItem(
+            return GestureDetector(
+                onTap: (){
+              NavigatorUtils.push(context, '${CityRouter.cityDetailPage}?uid=${_list[index].uid}');
+            },
+            child: GoodsItem(
               index: index,
               selectIndex: _selectIndex,
               item: _list[index],
@@ -177,10 +177,9 @@ class _GoodsListPageState extends State<GoodsListPage> with  SingleTickerProvide
                 _selectIndex = -1;
                 _showDeleteBottomSheet(index);
               },
-            );
+            ));
           }
-      ),
-    );
+      );
   }
 
   // @override

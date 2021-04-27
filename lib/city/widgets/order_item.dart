@@ -2,6 +2,8 @@
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/city/models/raiders_entity.dart';
+import 'package:flutter_aqi/city/models/trade_entity.dart';
 import 'package:flutter_aqi/city/widgets/pay_type_dialog.dart';
 import 'package:flutter_aqi/city/widgets/rating_bar.dart';
 import 'package:flutter_aqi/res/resources.dart';
@@ -19,30 +21,49 @@ const List<String> orderRightButtonText = ['接单', '开始配送', '完成', '
 
 class OrderItem extends StatelessWidget {
 
-  const OrderItem({
+  OrderItem({
     Key key,
     @required this.tabIndex,
     @required this.index,
+    @required this.list,
   }) : super(key: key);
 
   final int tabIndex;
   final int index;
+  List<dynamic> list;
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),
       child: MyCard(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: InkWell(
-            onTap: () => NavigatorUtils.push(context, ''),
+            onTap: () => _jumb(context,index),
             child: _route(context, index),
           ),
         ),
       )
     );
+  }
+
+  void _jumb(context, index){
+    if(tabIndex == 0){
+      NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
+    }else if(tabIndex == 1){
+      TradeEntity trade = list[index];
+      NavigatorUtils.goWebViewPage(context, '详情', trade.tradeUrl);
+    }else if(tabIndex == 2){
+      RaidersEntity raidersEntity = list[index];
+      NavigatorUtils.goWebViewPage(context, '详情', raidersEntity.jumbUrl);
+    }else if(tabIndex == 3){
+      NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
+    }else if(tabIndex == 4){
+      NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
+    }else{
+      NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
+    }
   }
 
   Widget _route(context, index){
@@ -63,6 +84,7 @@ class OrderItem extends StatelessWidget {
 
   //美景列表
   Widget _buildLandscape(BuildContext context){
+    TradeEntity trade = list[index];
     final TextStyle textTextStyle = Theme.of(context).textTheme.bodyText2.copyWith(fontSize: Dimens.font_sp12);
     final bool isDark = context.isDark;
     return Column(
@@ -74,16 +96,18 @@ class OrderItem extends StatelessWidget {
                 width: 100,
                 height: 60,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(5),
                     image: DecorationImage(
-                        image: NetworkImage('https://n1-q.mafengwo.net/s11/M00/46/1A/wKgBEFrsPkeARLM7AAEBBbum5WQ58.jpeg?imageMogr2%2Fthumbnail%2F%21380x270r%2Fgravity%2FCenter%2Fcrop%2F%21380x270%2Fquality%2F100')
+                        image: trade.tradeThumb == null ? NetworkImage('https://n1-q.mafengwo.net/s11/M00/46/1A/wKgBEFrsPkeARLM7AAEBBbum5WQ58.jpeg?imageMogr2%2Fthumbnail%2F%21380x270r%2Fgravity%2FCenter%2Fcrop%2F%21380x270%2Fquality%2F100')
+                                :
+                                NetworkImage(trade.tradeThumb)
                     )
                 )
             ),
             Expanded(
               child:Container(
                         height: 75.0,
-                        margin: EdgeInsets.only(bottom: 1.0),
+                        margin: EdgeInsets.only(left: 5.0, bottom: 1.0),
                         child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               mainAxisSize: MainAxisSize.min,
@@ -91,7 +115,7 @@ class OrderItem extends StatelessWidget {
                               children: [
                                 new Container(
                                   child: new Text(
-                                    "故宫 (5A)",
+                                    trade.tradeName,
                                     style: new TextStyle(fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -136,6 +160,7 @@ class OrderItem extends StatelessWidget {
   //攻略
   Widget _buildRaiders(BuildContext context){
     final bool isDark = context.isDark;
+    RaidersEntity raidersEntity = list[index];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,11 +168,15 @@ class OrderItem extends StatelessWidget {
           children: <Widget>[
             Container(
                 width: 100,
-                height: 60,
+                height: 65,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     image: DecorationImage(
-                        image: NetworkImage('http://b1-q.mafengwo.net/s11/M00/36/36/wKgBEFrhb3SAN3dcABAft7C2kYs76.jpeg?imageMogr2%2Fthumbnail%2F%21305x183r%2Fgravity%2FCenter%2Fcrop%2F%21305x183%2Fquality%2F100')
+                        fit: BoxFit.fill,
+                        image: NetworkImage(
+                            raidersEntity.thumb != null? raidersEntity?.thumb :
+                            'http://b1-q.mafengwo.net/s11/M00/36/36/wKgBEFrhb3SAN3dcABAft7C2kYs76.jpeg?imageMogr2%2Fthumbnail%2F%21305x183r%2Fgravity%2FCenter%2Fcrop%2F%21305x183%2Fquality%2F100'
+                        )
                     )
                 )
             ),
@@ -162,16 +191,13 @@ class OrderItem extends StatelessWidget {
                     children: [
                       new Container(
                         child: new Text(
-                          "不到长城非好汉",
+                          raidersEntity?.title,
                           style: new TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ),
                       new Container(
                         child: Text(
-                          '''''被称为“天下九塞”之一，是明长城景色中的精华，海拔高达1015米，也是居庸关的前哨。
-                            ·分为南长城和北长城两部分，南长城有7处敌楼，游客相对较少，北长城有12处敌楼，比较难爬。
-                          ·是游览北京的必到之处，尼克松、撒切尔夫人等三百多位世界知名人士曾登上长城。
-                          ·是5A级景区，被联合国教科文组织列入《世界文化遗产名录》，热度仅次于天安门广场。''',
+                          raidersEntity?.description,
                           style: Theme.of(context).textTheme.subtitle2,
                           maxLines: 2,
                         ),
@@ -183,7 +209,7 @@ class OrderItem extends StatelessWidget {
           ],
         ),
         Container(
-          child: Text("马蜂窝 12322评论", style: Theme.of(context).textTheme.subtitle2,),
+          child: Text("马蜂窝 ${raidersEntity.readCount}评论", style: Theme.of(context).textTheme.subtitle2,),
         )
       ],
     );

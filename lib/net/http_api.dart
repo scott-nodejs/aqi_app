@@ -9,4 +9,6 @@ class HttpApi{
   static const String rank = 'getRankByCity?type=%s';
   static const String get_map_aqi = 'getMap';
   static const String city_Q_list = 'cityQ/list/%s';
+  static const String trade_list = 'cityQ/trade/list/%s?page=%s';
+  static const String get_one_city = 'cityQ/getCity/%s';
 }

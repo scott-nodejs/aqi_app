@@ -8,6 +8,9 @@ import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/city/models/city_helper.dart';
 import 'package:flutter_aqi/city/models/city_item_entity.dart';
 import 'package:flutter_aqi/city/models/city_result.dart';
+import 'package:flutter_aqi/city/models/cityq_detail_entity.dart';
+import 'package:flutter_aqi/city/models/raiders_entity.dart';
+import 'package:flutter_aqi/city/models/trade_entity.dart';
 import 'package:flutter_aqi/generated/json/city_entity_helper.dart';
 import 'package:flutter_aqi/mapScreen/models/map_helper.dart';
 import 'package:flutter_aqi/mapScreen/models/map_model.dart';
@@ -28,9 +31,9 @@ class JsonConvert<T> {
   static _getFromJson<T>(Type type, data, json) {
     switch (type) {
       case CityEntity:
-			return cityEntityFromJson(data as CityEntity, json) as T;
+			  return cityEntityFromJson(data as CityEntity, json) as T;
 			case AqiEntity:
-			return aqiEntityFromJson(data as AqiEntity, json) as T;
+			  return aqiEntityFromJson(data as AqiEntity, json) as T;
       case EvnEntity:
         return envEntityFromJson(data as EvnEntity, json);
       case AqiItem:
@@ -51,6 +54,12 @@ class JsonConvert<T> {
         return cityResultfromJson(data as CityResult, json);
       case CityItemEntity:
         return cityItemEntityfromJson(data as CityItemEntity, json);
+      case CityqDetailEntity:
+        return cityqDetailentityfromJson(data as CityqDetailEntity, json);
+      case TradeEntity:
+        return tradeEntityfromJson(data as TradeEntity, json);
+      case RaidersEntity:
+        return raidersEntityFormJson(data as RaidersEntity, json);
     }
     return data as T;
   }
@@ -73,6 +82,12 @@ class JsonConvert<T> {
         return MapEntity().fromJson(json);
       case 'CityResult':
         return CityResult().fromJson(json);
+      case 'CityqDetailEntity':
+        return CityqDetailEntity().fromJson(json);
+      case 'TradeEntity':
+        return TradeEntity().fromJson(json);
+      case 'CityItemEntity':
+        return CityItemEntity().fromJson(json);
     }
     return null;
   }

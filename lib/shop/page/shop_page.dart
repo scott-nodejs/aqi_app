@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/city/city_router.dart';
 // import 'package:flutter_aqi/account/account_router.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
 import 'package:flutter_aqi/res/resources.dart';
@@ -115,7 +116,17 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                                   shrinkWrap: true,
                                   itemCount: 10,
                                   itemExtent: 76.0,
-                                  itemBuilder: (context, index) => _buildItem(index),
+                                  itemBuilder: (context, index) => InkWell(
+                                     onTap: (){
+                                        City city;
+                                        List<City> citys = provider.rank?.citys;
+                                        if(citys != null && citys.length > 0){
+                                            city = citys[index];
+                                            NavigatorUtils.push(context, '${CityRouter.cityDetailPage}?uid=${city?.uid}');
+                                        }
+                                     },
+                                     child: _buildItem(index)
+                                  ),
                                 ),
                               ],
                             );
@@ -152,7 +163,6 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
             /// 精准判断刷新条件（provider 4.0新属性）
   //                  shouldRebuild: (previous, next) => previous != next,
             builder: (_, sortIndex, __) {
-              // 只会触发sortIndex变化的刷新
               return Row(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
