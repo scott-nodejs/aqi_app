@@ -21,6 +21,8 @@ rankEntityFromJson(RankEntity data, Map<String, dynamic> json) {
 cityFromJson(City data, Map<String, dynamic> json){
 	data.city = json['city']?.toString();
 	data.uid = json['uid']?.toInt();
+	data.lat = json['lat']?.toDouble();
+	data.lon = json['lon']?.toDouble();
 	data.province = json['province']?.toString();
 	data.feature = json['feature']?.toString();
 	return data;

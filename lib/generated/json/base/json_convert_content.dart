@@ -72,8 +72,8 @@ class JsonConvert<T> {
   }
   //Go back to a single instance by type
   static _fromJsonSingle(String type, json) {
-    switch (type) {		case 'CityEntity':
-			return CityEntity().fromJson(json);
+    switch (type) {		case 'City':
+			return City().fromJson(json);
       case 'AqiEntity':
         return AqiEntity().fromJson(json);
       case 'RankEntity':

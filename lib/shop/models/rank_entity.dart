@@ -10,6 +10,8 @@ class RankEntity with JsonConvert<RankEntity> {
 class City with JsonConvert<City>{
 	int uid;
 	String city;
+	double lat;
+	double lon;
 	String province;
 	String feature;
 }

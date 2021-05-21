@@ -170,6 +170,7 @@ class _OrderPageState extends State<OrderPage> with AutomaticKeepAliveClientMixi
                     image: DecorationImage(
                         fit: BoxFit.fill,
                         image: NetworkImage(
+                            entity == null ? '':
                             entity.cityThumb != null? entity?.cityThumb :
                             'http://b1-q.mafengwo.net/s11/M00/36/36/wKgBEFrhb3SAN3dcABAft7C2kYs76.jpeg?imageMogr2%2Fthumbnail%2F%21305x183r%2Fgravity%2FCenter%2Fcrop%2F%21305x183%2Fquality%2F100'
                         )

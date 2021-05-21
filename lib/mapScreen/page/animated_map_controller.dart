@@ -5,12 +5,18 @@ import 'package:flutter_aqi/mapScreen/presenter/MapPresenter.dart';
 import 'package:flutter_aqi/mapScreen/provider/map_provider.dart';
 import 'package:flutter_aqi/mapScreen/widget/bubble_widget.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
+import 'package:flutter_aqi/shop/models/rank_entity.dart';
+import 'package:flutter_aqi/utils/toast.dart';
+import 'package:flutter_aqi/widgets/search_bar.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 import 'package:flutter_aqi/utils/theme_utils.dart';
 import "package:flutter_map/flutter_map.dart" as flutterMap;
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
+import 'package:sprintf/sprintf.dart';
 
 class AnimatedMapControllerPage extends StatefulWidget {
   static const String route = 'map_controller_animated';
@@ -29,6 +35,8 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
   static LatLng shanghai = LatLng(31.2047372,121.4489017);
   static LatLng chengdu = LatLng(30.6250145,104.0670559);
   static LatLng xiamen = LatLng(24.479834,118.089425);
+  final TextEditingController _controller = TextEditingController();
+  List<String> citys = ['北京', '深圳', '上海', '成都'];
 
   MapController mapController;
 
@@ -78,14 +86,40 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
     controller.forward();
   }
 
+  void _getCityQByClient(String city) async{
+    String url = sprintf(HttpApi.get_city, [city]);
+    DioUtils.instance.asyncRequestNetwork<City>(Method.get, url,
+      params: '',
+      queryParameters: {},
+      onSuccess: (data) {
+        setState(() {
+          if(data != null){
+            _animatedMapMove(LatLng(data.lat,data.lon), 10.0);
+          }
+        });
+      },
+      onError: (code, msg) {
+
+      },
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
     isDark = context.isDark;
     return ChangeNotifierProvider<MapProvider>(
         create: (_) => provider,
         child: Scaffold(
-          appBar: AppBar(title: Center(child: Text('地图看AQI',style: TextStyle(fontSize: 16, color: isDark ? Colors.white: Colors.black)))),
-          //drawer: buildDrawer(context, AnimatedMapControllerPage.route),
+          appBar: SearchBar(
+            hintText: '请输入城市名称查询',
+            onPressed: (text) => {
+              _getCityQByClient(text)
+            },
+            controller: _controller,
+            citys: citys,
+          ),
+          // appBar: AppBar(title: Center(child: Text('地图看AQI',style: TextStyle(fontSize: 16, color: isDark ? Colors.white: Colors.black)))),
           body: Consumer<MapProvider>(
               builder: (_, provider, __) {
                 lat = SpUtil.getDouble("lat");
@@ -101,24 +135,28 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                                 children: <Widget>[
                                   MaterialButton(
                                     onPressed: () {
+                                      _controller.text = "北京";
                                       _animatedMapMove(beijing, 10.0);
                                     },
                                     child: Text('北京'),
                                   ),
                                   MaterialButton(
                                     onPressed: () {
+                                      _controller.text = "深圳";
                                       _animatedMapMove(shenzhen, 10.0);
                                     },
                                     child: Text('深圳'),
                                   ),
                                   MaterialButton(
                                     onPressed: () {
+                                      _controller.text = "上海";
                                       _animatedMapMove(shanghai, 10.0);
                                     },
                                     child: Text('上海'),
                                   ),
                                   MaterialButton(
                                     onPressed: () {
+                                      _controller.text = "成都";
                                       _animatedMapMove(chengdu, 10.0);
                                     },
                                     child: Text('成都'),
@@ -138,7 +176,7 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                                   FlutterMap(
                                     mapController: mapController,
                                     options: MapOptions(
-                                        center: LatLng(lat != null ? lat : 39.954592, long != null ? long : 116.468117),
+                                        center: LatLng(lat != 0.0 ? lat : 39.954592, long != 0.0 ? long : 116.468117),
                                         zoom: 10.0,
                                         maxZoom: 13.0,
                                         minZoom: 8.0),

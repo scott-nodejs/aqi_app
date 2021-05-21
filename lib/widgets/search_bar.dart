@@ -9,14 +9,17 @@ import 'load_image.dart';
 
 /// 搜索页的AppBar
 class SearchBar extends StatefulWidget implements PreferredSizeWidget {
-
-  const SearchBar({
+  TextEditingController controller;
+  SearchBar({
     Key key,
     this.hintText = '',
     this.backImg = 'assets/images/ic_back_black.png',
     this.onPressed,
+    this.controller,
+    this.citys
   }): super(key: key);
 
+  final List<String> citys;
   final String backImg;
   final String hintText;
   final Function(String) onPressed;
@@ -30,8 +33,25 @@ class SearchBar extends StatefulWidget implements PreferredSizeWidget {
 
 class _SearchBarState extends State<SearchBar> {
 
-  final TextEditingController _controller = TextEditingController();
+  TextEditingController _controller;
+  String cityname;
   final FocusNode _focus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller;
+    _controller.addListener(() {
+      setState(() {
+        if(_controller.text != ''){
+          cityname = _controller.text;
+          if(widget.citys.contains(cityname)){
+            _controller.text = '';
+          }
+        }
+      });
+    });
+  }
 
   @override
   void dispose() {
@@ -44,7 +64,23 @@ class _SearchBarState extends State<SearchBar> {
   Widget build(BuildContext context) {
     final bool isDark = context.isDark;
     final Color iconColor = isDark ? Colours.dark_text_gray : Colours.text_gray_c;
-    
+
+    Widget curCity = Semantics(
+      label: '返回',
+      child: SizedBox(
+        width: 73.0,
+        height: 48.0,
+        child: Padding(
+          key: const Key('search_back'),
+          padding: const EdgeInsets.all(12.0),
+          child: Row(children: [
+            LoadAssetImage('statistic/location', width: 20.0, height: 20.0, color: isDark ? Colors.white: Colors.black),
+            Text(cityname != null? cityname: '北京',style: TextStyle(fontSize: 14, color: isDark ? Colors.white: Colors.black))
+          ],),
+        ),
+      ),
+    );
+
     final Widget back = Semantics(
       label: '返回',
       child: SizedBox(
@@ -146,7 +182,7 @@ class _SearchBarState extends State<SearchBar> {
           child: Container(
             child: Row(
               children: <Widget>[
-                back,
+                curCity,
                 textField,
                 Gaps.hGap8,
                 search,
