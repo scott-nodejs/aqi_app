@@ -58,9 +58,9 @@ class OrderItem extends StatelessWidget {
       RaidersEntity raidersEntity = list[index];
       NavigatorUtils.goWebViewPage(context, '详情', raidersEntity.jumbUrl);
     }else if(tabIndex == 3){
-      NavigatorUtils.goWebViewPage(context, '详情', 'https://m.ctrip.com/webapp/vacations/tour/detail?productid=17986183&departcityid=2&frompc=1');
+      NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
     }else if(tabIndex == 4){
-      NavigatorUtils.goWebViewPage(context, '详情', 'https://gs.ctrip.com/html5/you/foods/1/4965382.html');
+      NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
     }else{
       NavigatorUtils.goWebViewPage(context, '详情', 'http://www.baidu.com');
     }

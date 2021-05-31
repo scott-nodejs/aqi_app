@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
       StatisticsPage(),
       AnimatedMapControllerPage(),
       // CityPage(),
-      const ShopPage(),
+      ShopPage(),
       MyPage(),
     ];
   }

@@ -86,6 +86,7 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
     controller.forward();
   }
 
+
   void _getCityQByClient(String city) async{
     String url = sprintf(HttpApi.get_city, [city]);
     DioUtils.instance.asyncRequestNetwork<City>(Method.get, url,
