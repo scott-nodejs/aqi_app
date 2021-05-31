@@ -67,6 +67,9 @@ dependencies:
   amap_location: ^0.2.0
   permission_handler: ^3.2.0
   flutter_map: ^0.8.2
+  image_picker: 0.6.7+11
+  lpinyin: ^2.0.0
+  # 侧滑删除 https://github.com/letsar/flutter_slidable
   #amap_map_fluttify: ^0.30.1
 
 
