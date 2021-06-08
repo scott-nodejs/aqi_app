@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/account/models/city_entity.dart';
+import 'package:flutter_aqi/common/common.dart';
+import 'package:flutter_aqi/login/login_router.dart';
 import 'package:flutter_aqi/mapScreen/iview/map_iview.dart';
 import 'package:flutter_aqi/mapScreen/models/map_model.dart';
 import 'package:flutter_aqi/mapScreen/presenter/MapPresenter.dart';
@@ -7,6 +10,7 @@ import 'package:flutter_aqi/mapScreen/widget/bubble_widget.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
 import 'package:flutter_aqi/net/dio_utils.dart';
 import 'package:flutter_aqi/net/http_api.dart';
+import 'package:flutter_aqi/routers/fluro_navigator.dart';
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
 import 'package:flutter_aqi/utils/toast.dart';
 import 'package:flutter_aqi/widgets/search_bar.dart';
@@ -17,6 +21,8 @@ import "package:flutter_map/flutter_map.dart" as flutterMap;
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:sprintf/sprintf.dart';
+
+import '../map_router.dart';
 
 class AnimatedMapControllerPage extends StatefulWidget {
   static const String route = 'map_controller_animated';
@@ -38,6 +44,14 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
   final TextEditingController _controller = TextEditingController();
   List<String> citys = ['北京', '深圳', '上海', '成都'];
 
+  List<Map<String,Object>> cityMaps = [
+                         {'name':'北京','lat':39.954592,'lon':116.468117},
+                         {'name':'深圳','lat':22.543099,'lon':114.057868},
+                         {'name':'上海','lat':31.2047372,'lon':121.4489017},
+                         {'name':'成都','lat':30.6250145,'lon':104.0670559}];
+
+  List<Widget> selectcitys = [];
+
   MapController mapController;
 
   double lat = 0, long = 0;
@@ -46,11 +60,61 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
 
   MapProvider provider = new MapProvider();
 
+  String phone;
+
   @override
   void initState() {
     super.initState();
+    phone = SpUtil.getString(Constant.phone);
     mapController = MapController();
+    for(var city in cityMaps){
+      selectcitys.add( MaterialButton(
+        minWidth: 60,
+        onPressed: () {
+          _controller.text = city['name'];
+          _animatedMapMove(LatLng(city['lat'],city['lon']), 10.0);
+        },
+        child: Text(city['name']),
+      ),);
+    }
+    selectcitys.add(GestureDetector(
+          onTap:()=>{
+             if(phone.isEmpty){
+               NavigatorUtils.push(context, LoginRouter.loginPage)
+             }else{
+               NavigatorUtils.pushResult(context, MapRouter.citySelectPage, (Object result) {
+                 List<CityEntity> models = result as List<CityEntity>;
+                 selectcitys.removeRange(0, 4);
+                 citys.clear();
+                 setState(() {
+                   for(int i = 0; i< models.length; i++){
+                     citys.add(models[i].name);
+                     selectcitys.insert(i, MaterialButton(
+                       minWidth: 60,
+                       onPressed: () {
+                         _controller.text = models[i].name;
+                         _animatedMapMove(LatLng(models[i].lat,models[i].lng), 10.0);
+                       },
+                       child: Text(models[i].name),
+                     ),);
+                   }
+                 });
+               })
+             }
+
+          },
+          child:Icon(Icons.more_vert, color: Colors.grey),));
   }
+
+  @override
+  refreshHandleFunction(String name) async {
+    setState(() {
+      phone = SpUtil.getString(Constant.phone);
+    });
+    super.refreshHandleFunction(name);
+  }
+
+
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
     // Create some tweens. These serve to split up the transition from one location to another.
@@ -132,42 +196,7 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                               padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: <Widget>[
-                                  MaterialButton(
-                                    onPressed: () {
-                                      _controller.text = "北京";
-                                      _animatedMapMove(beijing, 10.0);
-                                    },
-                                    child: Text('北京'),
-                                  ),
-                                  MaterialButton(
-                                    onPressed: () {
-                                      _controller.text = "深圳";
-                                      _animatedMapMove(shenzhen, 10.0);
-                                    },
-                                    child: Text('深圳'),
-                                  ),
-                                  MaterialButton(
-                                    onPressed: () {
-                                      _controller.text = "上海";
-                                      _animatedMapMove(shanghai, 10.0);
-                                    },
-                                    child: Text('上海'),
-                                  ),
-                                  MaterialButton(
-                                    onPressed: () {
-                                      _controller.text = "成都";
-                                      _animatedMapMove(chengdu, 10.0);
-                                    },
-                                    child: Text('成都'),
-                                  ),
-                                  // MaterialButton(
-                                  //   onPressed: () {
-                                  //     _animatedMapMove(xiamen, 10.0);
-                                  //   },
-                                  //   child: Text('厦门'),
-                                  // ),//
-                                ],
+                                children: selectcitys,
                               ),
                             ),
                             Flexible(

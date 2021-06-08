@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/login/login_router.dart';
 import 'package:flutter_aqi/res/styles.dart';
 import 'package:flutter_aqi/routers/fluro_navigator.dart';
 import 'package:flutter_aqi/widgets/base_dialog.dart';
@@ -26,7 +27,7 @@ class _ExitDialog extends State<ExitDialog> {
         child: Text('您确定要退出登录吗？', style: TextStyles.textSize16),
       ),
       onPressed: () {
-        // NavigatorUtils.push(context, LoginRouter.loginPage, clearStack: true);
+        NavigatorUtils.push(context, LoginRouter.loginPage, clearStack: true);
       },
     );
   }

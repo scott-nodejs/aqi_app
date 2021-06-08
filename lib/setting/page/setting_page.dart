@@ -64,7 +64,9 @@ class _SettingPageState extends State<SettingPage> {
           ClickItem(
             title: '清除缓存',
             content: '23.5MB',
-            onTap: () {}
+            onTap: () {
+              SpUtil.clear();
+            }
           ),
           ClickItem(
             title: '夜间模式',

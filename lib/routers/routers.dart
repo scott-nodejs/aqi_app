@@ -3,6 +3,8 @@ import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/home/home_page.dart';
 import 'package:flutter_aqi/home/webview_page.dart';
+import 'package:flutter_aqi/login/login_router.dart';
+import 'package:flutter_aqi/mapScreen/map_router.dart';
 import 'package:flutter_aqi/setting/setting_router.dart';
 import 'package:flutter_aqi/shop/shop_router.dart';
 import 'package:flutter_aqi/city/city_router.dart';
@@ -41,10 +43,10 @@ class Routes {
     _listRouter.clear();
     /// 各自路由由各自模块管理，统一在此添加初始化
     _listRouter.add(ShopRouter());
-    // _listRouter.add(LoginRouter());
+    _listRouter.add(LoginRouter());
     // _listRouter.add(GoodsRouter());
     // _listRouter.add(OrderRouter());
-    // _listRouter.add(StoreRouter());
+    _listRouter.add(MapRouter());
     _listRouter.add(CityRouter());
     _listRouter.add(SettingRouter());
     _listRouter.add(StatisticsRouter());

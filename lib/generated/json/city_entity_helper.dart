@@ -10,6 +10,12 @@ cityEntityFromJson(CityEntity data, Map<String, dynamic> json) {
 	if (json['firstCharacter'] != null) {
 		data.firstCharacter = json['firstCharacter']?.toString();
 	}
+	if(json['lat'] != null){
+		data.lat = json['lat']?.toDouble();
+	}
+	if(json['lng'] != null){
+		data.lng = json['lng']?.toDouble();
+	}
 	return data;
 }
 

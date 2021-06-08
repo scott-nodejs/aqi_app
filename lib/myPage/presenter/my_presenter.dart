@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/mvp/base_page_presenter.dart';
 import 'package:flutter_aqi/net/net.dart';
-import 'package:flutter_aqi/shop/models/rank_entity.dart';
-import 'package:flutter_aqi/shop/iview/shop_iview.dart';
+import 'package:flutter_aqi/myPage/models/user_entity.dart';
+import 'package:flutter_aqi/myPage/iview/my_iview.dart';
 import 'package:flutter_aqi/utils/log_utils.dart';
-import 'package:sprintf/sprintf.dart';
 
 
-class ShopPagePresenter extends BasePagePresenter<ShopIMvpView> {
+class MyPagePresenter extends BasePagePresenter<MyIMvpView> {
 
   @override
   void initState() {
@@ -20,31 +19,13 @@ class ShopPagePresenter extends BasePagePresenter<ShopIMvpView> {
       
       /// 接口请求例子
       /// get请求参数queryParameters  post请求参数params
-      asyncRequestNetwork<RankEntity>(Method.get,
-        url: sprintf(HttpApi.rank,['0','1']),
+      asyncRequestNetwork<UserEntity>(Method.get,
+        url: HttpApi.users,
         onSuccess: (data) {
-          view.setRank(data);
+          //view.setUser();
         },
       );
     });
-  }
-
-  void selectPage(index,page){
-    asyncRequestNetwork<RankEntity>(Method.get,
-      url: sprintf(HttpApi.rank,[index,page]),
-      onSuccess: (data) {
-        view.setRank(data);
-      },
-    );
-  }
-
-  void select(index,page){
-    asyncRequestNetwork<RankEntity>(Method.get,
-      url: sprintf(HttpApi.rank,[index,page]),
-      onSuccess: (data) {
-        view.setRank(data);
-      },
-    );
   }
  
   void testListData() {

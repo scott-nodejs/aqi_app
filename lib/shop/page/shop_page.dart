@@ -3,8 +3,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/city/city_router.dart';
+import 'package:flutter_aqi/city/models/city_item_entity.dart';
 // import 'package:flutter_aqi/account/account_router.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/routers/fluro_navigator.dart';
 import 'package:flutter_aqi/setting/setting_router.dart';
@@ -23,6 +26,8 @@ import 'package:flutter_aqi/widgets/load_image.dart';
 import 'package:flutter_aqi/widgets/my_card.dart';
 import 'package:flutter_aqi/widgets/popup_window.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_aqi/widgets/my_refresh_list.dart';
+import 'package:sprintf/sprintf.dart';
 
 /// design/6店铺-账户/index.html#artboard0
 class ShopPage extends StatefulWidget {
@@ -44,7 +49,11 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
 
   RankProvider provider = RankProvider();
 
+  int _page = 1;
+
   bool _type = false;
+
+  List<City> _list = <City>[];
 
   final GlobalKey _addKey = GlobalKey();
   final GlobalKey _bodyKey = GlobalKey();
@@ -53,6 +62,28 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
   @override
   void setRank(RankEntity rank) {
     provider.setRank(rank);
+  }
+
+  bool _hasMore() {
+    return true;
+  }
+
+  void _getMoreData() async {
+    String url = sprintf(HttpApi.rank,[provider.sortIndex, _page++]);
+    DioUtils.instance.asyncRequestNetwork<RankEntity>(Method.get, url,
+      params: '',
+      queryParameters: {},
+      onSuccess: (data) {
+        setState(() {
+          if(data != null){
+            _list.addAll(data.citys);
+          }
+        });
+      },
+      onError: (code, msg) {
+
+      },
+    );
   }
 
   @override
@@ -72,23 +103,19 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
       create: (_) => provider,
       child: Scaffold(
         appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-              tooltip: '设置',
-              onPressed: () {
-                NavigatorUtils.push(context, SettingRouter.settingPage);
-              },
-              icon: LoadAssetImage(
-                'shop/setting',
-                key: const Key('setting'),
-                width: 24.0,
-                height: 24.0,
-                color: _iconColor,
-              ),
-            )
-          ],
+          title: Center(child: Text('城市排行',style: TextStyle(
+              fontSize: Dimens.font_sp18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black
+          )))
         ),
         body: NotificationListener<ScrollNotification>(
+            onNotification: (ScrollNotification note) {
+              if (note.metrics.pixels == note.metrics.maxScrollExtent) {
+                _getMoreData();
+              }
+              return true;
+            },
             child: RefreshIndicator(
                 notificationPredicate: (notifation) {
                   return true;
@@ -96,45 +123,38 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                 displacement: 100.0,
                 onRefresh:_handleRefresh,
                 color: Colors.blue,
-                child:SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                    key: _bodyKey,
-                  child: SafeArea(
-                    child: Consumer<RankProvider>(
+                child: Consumer<RankProvider>(
                         builder: (_, provider, child) {
-                          return Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                //Text(_type ? '已配货' : '最优每日排行榜', style: TextStyles.textBold24),
-                                _buildHeader(),
-                                _buildChart(),
-                                const Text('城市排行', style: TextStyles.textBold18),
-                                ListView.builder(
+                          List<City> citys = provider.rank?.citys;
+                          if(citys != null && citys.length > 0){
+                              _list.addAll(citys);
+                            }
+                            return ListView.builder(
                                   physics: const ClampingScrollPhysics(),
                                   padding: const EdgeInsets.only(top: 16.0),
                                   shrinkWrap: true,
-                                  itemCount: 10,
+                                  itemCount: _list.length+1,
                                   itemExtent: 76.0,
-                                  itemBuilder: (context, index) => InkWell(
-                                     onTap: (){
-                                        City city;
-                                        List<City> citys = provider.rank?.citys;
-                                        if(citys != null && citys.length > 0){
-                                            city = citys[index];
-                                            NavigatorUtils.push(context, '${CityRouter.cityDetailPage}?uid=${city?.uid}');
-                                        }
-                                     },
-                                     child: _buildItem(index)
-                                  ),
-                                ),
-                              ],
-                            );
+                                  itemBuilder: (context, index) {
+                                    if(index == _list.length){
+                                      return MoreWidget(_list.length, _hasMore(), 20);
+                                    }else{
+                                      return InkWell(
+                                          onTap: (){
+                                            // City city;
+                                            // if(citys != null && citys.length > 0){
+                                            //   city = citys[index];
+                                            //   NavigatorUtils.push(context, '${CityRouter.cityDetailPage}?uid=${city?.uid}');
+                                            // }
+                                          },
+                                          child: _buildItem(index)
+                                      );
+                                    }
+                                  },
+                                );
                         }),
-                  ),
-        )))
-      ),
-    );
+                ),
+    )));
   }
 
   Future<void> _handleRefresh() {
@@ -143,7 +163,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
       completer.complete();
     });
     return completer.future.then<void>((_) {
-      presenter.select(provider.sortIndex);
+      presenter.select(provider.sortIndex,1);
     });
   }
 
@@ -209,7 +229,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
         onSelected: (index, name) {
           provider.setSortIndex(index);
           Toast.show('选择分类: $name');
-          presenter.select(index);
+          presenter.select(index,1);
           NavigatorUtils.goBack(context);
         },
       ),
@@ -278,18 +298,6 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                   ],
                 ),
               ),
-              // Gaps.hGap8,
-              // Visibility(
-              //   visible: !_type,
-              //   child: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: <Widget>[
-              //       Text('100件', style: Theme.of(context).textTheme.subtitle2),
-              //       Text('未支付', style: Theme.of(context).textTheme.subtitle2),
-              //     ],
-              //   ),
-              // ),
               Gaps.hGap16,
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
