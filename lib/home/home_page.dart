@@ -5,6 +5,7 @@ import 'package:flutter_aqi/mapScreen/page/animated_map_controller.dart';
 import 'package:flutter_aqi/mapScreen/select_address_page.dart';
 import 'package:flutter_aqi/myPage/page/MyPage.dart';
 import 'package:flutter_aqi/res/resources.dart';
+import 'package:flutter_aqi/shop/page/rank_page.dart';
 import 'package:flutter_aqi/shop/page/shop_page.dart';
 import 'package:flutter_aqi/city/page/city_page.dart';
 import 'package:flutter_aqi/statistics/page/statistics_page.dart';
@@ -48,7 +49,8 @@ class _HomeState extends State<Home> {
       StatisticsPage(),
       AnimatedMapControllerPage(),
       // CityPage(),
-      ShopPage(),
+      // ShopPage(),
+      RankPage(),
       MyPage(),
     ];
   }

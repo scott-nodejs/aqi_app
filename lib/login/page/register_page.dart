@@ -2,7 +2,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_aqi/common/common.dart';
 import 'package:flutter_aqi/localization/app_localizations.dart';
+import 'package:flutter_aqi/login/entity/LoginData.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
+import 'package:flutter_aqi/routers/fluro_navigator.dart';
+import 'package:flutter_aqi/routers/routers.dart';
 import 'package:flutter_aqi/utils/change_notifier_manage.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/utils/toast.dart';
@@ -11,6 +17,9 @@ import 'package:flutter_aqi/widgets/my_app_bar.dart';
 import 'package:flutter_aqi/widgets/my_button.dart';
 import 'package:flutter_aqi/widgets/my_scroll_view.dart';
 import 'package:flutter_aqi/login/widgets/my_text_field.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:sp_util/sp_util.dart';
+import 'package:sprintf/sprintf.dart';
 
 /// design/1注册登录/index.html#artboard11
 class RegisterPage extends StatefulWidget {
@@ -63,7 +72,27 @@ class _RegisterPageState extends State<RegisterPage> with ChangeNotifierMixin<Re
   }
   
   void _register() {
-    Toast.show('点击注册');
+    Map<String,dynamic> params = new Map();
+    params['username'] =  _nameController.text;
+    params['code'] = _vCodeController.text;
+    params['password'] = _passwordController.text;
+    DioUtils.instance.requestNetwork<LoginData>(Method.post, HttpApi.register,
+      params: params,
+      queryParameters: {},
+      onSuccess: (data) {
+        if(data != null && data.code == 200){
+          SpUtil.putString(Constant.phone, _nameController.text);
+          NavigatorUtils.pushReplace(context, Routes.home, clearStack: true);
+        }else if(data != null && data.code != 200){
+          showToast(data.msg);
+        }else{
+          showToast("注册失败");
+        }
+      },
+      onError: (code, msg) {
+        showToast("注册失败");
+      },
+    );
   }
 
   @override
@@ -106,6 +135,18 @@ class _RegisterPageState extends State<RegisterPage> with ChangeNotifierMixin<Re
           if (_nameController.text.length == 11) {
             Toast.show(AppLocalizations.of(context).verificationButton);
             /// 一般可以在这里发送真正的请求，请求成功返回true
+            DioUtils.instance.requestNetwork<LoginData>(Method.get, sprintf(HttpApi.sendcode, [_nameController.text]),
+              params: '',
+              queryParameters: {},
+              onSuccess: (data) {
+                if(data != null && data.code == 200){
+                  showToast("发送成功");
+                }
+              },
+              onError: (code, msg) {
+
+              },
+            );
             return true;
           } else {
             Toast.show(AppLocalizations.of(context).inputPhoneInvalid);

@@ -3,6 +3,7 @@ import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/common/common.dart';
 import 'package:flutter_aqi/login/login_router.dart';
 import 'package:flutter_aqi/mapScreen/iview/map_iview.dart';
+import 'package:flutter_aqi/mapScreen/models/custom_city.dart';
 import 'package:flutter_aqi/mapScreen/models/map_model.dart';
 import 'package:flutter_aqi/mapScreen/presenter/MapPresenter.dart';
 import 'package:flutter_aqi/mapScreen/provider/map_provider.dart';
@@ -66,44 +67,85 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
   void initState() {
     super.initState();
     phone = SpUtil.getString(Constant.phone);
+    getCustomCity();
     mapController = MapController();
-    for(var city in cityMaps){
-      selectcitys.add( MaterialButton(
-        minWidth: 60,
-        onPressed: () {
-          _controller.text = city['name'];
-          _animatedMapMove(LatLng(city['lat'],city['lon']), 10.0);
-        },
-        child: Text(city['name']),
-      ),);
-    }
-    selectcitys.add(GestureDetector(
-          onTap:()=>{
-             if(phone.isEmpty){
-               NavigatorUtils.push(context, LoginRouter.loginPage)
-             }else{
-               NavigatorUtils.pushResult(context, MapRouter.citySelectPage, (Object result) {
-                 List<CityEntity> models = result as List<CityEntity>;
-                 selectcitys.removeRange(0, 4);
-                 citys.clear();
-                 setState(() {
-                   for(int i = 0; i< models.length; i++){
-                     citys.add(models[i].name);
-                     selectcitys.insert(i, MaterialButton(
-                       minWidth: 60,
-                       onPressed: () {
-                         _controller.text = models[i].name;
-                         _animatedMapMove(LatLng(models[i].lat,models[i].lng), 10.0);
-                       },
-                       child: Text(models[i].name),
-                     ),);
-                   }
-                 });
-               })
-             }
+  }
 
-          },
-          child:Icon(Icons.more_vert, color: Colors.grey),));
+  void getCustomCity(){
+    DioUtils.instance.requestNetwork<CustomCitys>(Method.get, sprintf(HttpApi.getCustomCity,[phone]),
+      params: '',
+      queryParameters: {},
+      onSuccess: (data) {
+          if(data != null && data.code == 200 && data.data != null){
+            cityMaps.clear();
+            cityMaps.addAll(data.data);
+          }
+          citys.clear();
+          for(var city in cityMaps){
+            citys.add(city['name']);
+            selectcitys.add( MaterialButton(
+              minWidth: 60,
+              onPressed: () {
+                _controller.text = city['name'];
+                _animatedMapMove(LatLng(city['lat'],city['lon']), 10.0);
+              },
+              child: Text(city['name']),
+            ),);
+          }
+          selectcitys.add(GestureDetector(
+            onTap:()=>{
+              if(phone.isEmpty){
+                NavigatorUtils.push(context, LoginRouter.loginPage)
+              }else{
+                NavigatorUtils.pushResult(context, MapRouter.citySelectPage, (Object result) {
+                  SpUtil.remove(Constant.phone);
+                  List<String> uids = new List();
+                  List<CityEntity> models = result as List<CityEntity>;
+                  selectcitys.removeRange(0, 4);
+                  citys.clear();
+                  setState(() {
+                    for(int i = 0; i< models.length; i++){
+                      citys.add(models[i].name);
+                      uids.add(models[i].cityCode);
+                      selectcitys.insert(i, MaterialButton(
+                        minWidth: 60,
+                        onPressed: () {
+                          _controller.text = models[i].name;
+                          _animatedMapMove(LatLng(models[i].lat,models[i].lng), 10.0);
+                        },
+                        child: Text(models[i].name),
+                      ),);
+                    }
+                  });
+                  submitCustomCity(uids);
+                })
+              }
+
+            },
+            child:Icon(Icons.more_vert, color: Colors.grey),));
+      },
+      onError: (code, msg) {
+
+      },
+    );
+  }
+
+  void submitCustomCity(List<String> uids){
+    Map<String,dynamic> params = new Map();
+    params['phone'] = phone;
+    params['uids'] = uids;
+    DioUtils.instance.requestNetwork<CustomCitys>(Method.post, HttpApi.submitCustomCity,
+      params: params,
+      queryParameters: {},
+      onSuccess: (data) {
+          if(data != null && data.code == 200){
+            showToast("定制成功");
+          }
+      },
+      onError: (code, msg) {
+
+      },
+    );
   }
 
   @override

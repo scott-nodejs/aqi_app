@@ -31,6 +31,7 @@ cityFromJson(City data, Map<String, dynamic> json){
 rankItemFromJson(RankItem item, Map<String, dynamic> json){
 	item.name = json['name']?.toString();
 	item.c = json["score"]?.toInt();
+	item.aqi = json['aqi']?.toInt();
 	return item;
 }
 

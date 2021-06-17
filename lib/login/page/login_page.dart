@@ -2,8 +2,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_aqi/login/entity/LoginData.dart';
 import 'package:flutter_aqi/mapScreen/map_router.dart';
 import 'package:flutter_aqi/mapScreen/widget/NeedRefreshEvent.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
+import 'package:flutter_aqi/routers/routers.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:flutter_aqi/common/common.dart';
 import 'package:flutter_aqi/localization/app_localizations.dart';
@@ -79,9 +84,27 @@ class _LoginPageState extends State<LoginPage> with ChangeNotifierMixin<LoginPag
   }
   
   void _login() {
-    SpUtil.putString(Constant.phone, _nameController.text);
-    NeedRefreshEvent.refreshHandleFunction('AnimatedMapControllerPage');
-    Navigator.pop(context);
+    Map<String,dynamic> params = new Map();
+    params['username'] =  _nameController.text;
+    params['password'] = _passwordController.text;
+    DioUtils.instance.requestNetwork<LoginData>(Method.post, HttpApi.login,
+      params: params,
+      queryParameters: {},
+      onSuccess: (data) {
+        setState(() {
+          if(data != null && data.code == 200){
+            SpUtil.putString(Constant.phone, _nameController.text);
+            NeedRefreshEvent.refreshHandleFunction('AnimatedMapControllerPage');
+            NavigatorUtils.pushReplace(context, Routes.home, clearStack: true);
+          }else{
+            showToast("用户名或密码错误");
+          }
+        });
+      },
+      onError: (code, msg) {
+
+      },
+    );
   }
   
   @override

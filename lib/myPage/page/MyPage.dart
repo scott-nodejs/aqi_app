@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/common/common.dart';
+import 'package:flutter_aqi/login/login_router.dart';
 import 'package:flutter_aqi/mvp/base_page.dart';
 import 'package:flutter_aqi/myPage/models/user_entity.dart';
 import 'package:flutter_aqi/myPage/presenter/my_presenter.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_aqi/utils/image_utils.dart';
 import 'package:flutter_aqi/utils/theme_utils.dart';
 import 'package:flutter_aqi/widgets/click_item.dart';
 import 'package:flutter_aqi/widgets/load_image.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:sp_util/sp_util.dart';
 
@@ -124,10 +126,15 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin<MyPa
                     child,
                   ],
                 );
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: MergeSemantics(
-                    child: header,
+                return GestureDetector(
+                  onTap: (){
+                    NavigatorUtils.push(context, LoginRouter.loginPage);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: MergeSemantics(
+                      child: header,
+                    ),
                   ),
                 );
               },
@@ -153,7 +160,9 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin<MyPa
             ClickItem(
                 title: '清除缓存',
                 content: '23.5MB',
-                onTap: () {}
+                onTap: () {
+                  _clear();
+                }
             ),
             ClickItem(
                 title: '夜间模式',
@@ -196,6 +205,11 @@ class _MyPageState extends State<MyPage> with AutomaticKeepAliveClientMixin<MyPa
         barrierDismissible: false,
         builder: (_) => UpdateDialog()
     );
+  }
+
+  void _clear() {
+    showToast("清理缓存成功");
+    SpUtil.remove(Constant.phone);
   }
 
   @override

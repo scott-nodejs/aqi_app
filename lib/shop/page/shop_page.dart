@@ -74,11 +74,11 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
       params: '',
       queryParameters: {},
       onSuccess: (data) {
-        setState(() {
-          if(data != null){
+        if(data != null){
+          setState(() {
             _list.addAll(data.citys);
-          }
-        });
+          });
+        }
       },
       onError: (code, msg) {
 
@@ -133,7 +133,7 @@ class _ShopPageState extends State<ShopPage> with BasePageMixin<ShopPage, ShopPa
                                   physics: const ClampingScrollPhysics(),
                                   padding: const EdgeInsets.only(top: 16.0),
                                   shrinkWrap: true,
-                                  itemCount: _list.length+1,
+                                  itemCount: _list.length + 1,
                                   itemExtent: 76.0,
                                   itemBuilder: (context, index) {
                                     if(index == _list.length){

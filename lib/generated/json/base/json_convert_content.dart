@@ -12,6 +12,8 @@ import 'package:flutter_aqi/city/models/cityq_detail_entity.dart';
 import 'package:flutter_aqi/city/models/raiders_entity.dart';
 import 'package:flutter_aqi/city/models/trade_entity.dart';
 import 'package:flutter_aqi/generated/json/city_entity_helper.dart';
+import 'package:flutter_aqi/login/entity/LoginData.dart';
+import 'package:flutter_aqi/mapScreen/models/custom_city.dart';
 import 'package:flutter_aqi/mapScreen/models/map_helper.dart';
 import 'package:flutter_aqi/mapScreen/models/map_model.dart';
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
@@ -60,6 +62,10 @@ class JsonConvert<T> {
         return tradeEntityfromJson(data as TradeEntity, json);
       case RaidersEntity:
         return raidersEntityFormJson(data as RaidersEntity, json);
+      case LoginData:
+        return loginDataFormJson(data, json);
+      case CustomCitys:
+        return customCitysFromJson(data, json);
     }
     return data as T;
   }
@@ -88,21 +94,28 @@ class JsonConvert<T> {
         return TradeEntity().fromJson(json);
       case 'CityItemEntity':
         return CityItemEntity().fromJson(json);
+      case 'LoginData':
+        return LoginData().fromJson(json);
+      case 'CustomCitys':
+        return CustomCitys().fromJson(json);
     }
     return null;
   }
 
   //empty list is returned by type
   static _getListFromType(String type) {
-    switch (type) {			case 'CityEntity':
-			return List<CityEntity>();			case 'RankEntity':
-			return List<RankEntity>();			    }
+    switch (type) {
+      case 'CityEntity':
+			   return List<CityEntity>();
+      case 'RankEntity':
+			   return List<RankEntity>();
+    }
     return null;
   }
 
   static M fromJsonAsT<M>(json) {
     String type = M.toString();
-    if (json is List && type.contains("List<")) {
+    if (json is List && type.contains("List<") && type != 'CustomCitys') {
       String itemType = type.substring(5, type.length - 1);
       List tempList = _getListFromType(itemType);
       json.forEach((itemJson) {

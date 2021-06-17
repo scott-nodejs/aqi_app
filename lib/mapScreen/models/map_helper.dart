@@ -1,3 +1,5 @@
+import 'package:flutter_aqi/mapScreen/models/custom_city.dart';
+
 import 'map_model.dart';
 
 mapEntityFromJson(MapEntity data, Map<String, dynamic> json) {
@@ -23,4 +25,15 @@ mapItemFromJson(MapItem data, Map<String, dynamic> json){
       });
     }
     return data;
+}
+
+customCitysFromJson(CustomCitys data, Map<String, dynamic> json) {
+  data.code = json['code']?.toInt();
+  if (json['data'] != null) {
+    data.data = new List<Map<String,dynamic>>();
+    (json['data'] as List).forEach((v) {
+      data.data.add(v);
+    });
+  }
+  return data;
 }

@@ -12,4 +12,10 @@ class HttpApi{
   static const String trade_list = 'cityQ/trade/list/%s?page=%s';
   static const String get_one_city = 'cityQ/getCity/%s';
   static const String get_city = 'getCityByCityName/%s';
+  static const String login = 'login';
+  static const String sendcode = 'send/code?phone=%s';
+  static const String smslogin = 'phone/login';
+  static const String getCustomCity = 'get/customCity?phone=%s';
+  static const String submitCustomCity = 'custom/city';
+  static const String register = 'register';
 }

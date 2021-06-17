@@ -2,7 +2,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_aqi/common/common.dart';
 import 'package:flutter_aqi/localization/app_localizations.dart';
+import 'package:flutter_aqi/login/entity/LoginData.dart';
+import 'package:flutter_aqi/mapScreen/map_router.dart';
+import 'package:flutter_aqi/mapScreen/widget/NeedRefreshEvent.dart';
+import 'package:flutter_aqi/net/dio_utils.dart';
+import 'package:flutter_aqi/net/http_api.dart';
+import 'package:flutter_aqi/routers/routers.dart';
 import 'package:flutter_aqi/utils/change_notifier_manage.dart';
 import 'package:flutter_aqi/res/resources.dart';
 import 'package:flutter_aqi/routers/fluro_navigator.dart';
@@ -12,6 +19,9 @@ import 'package:flutter_aqi/widgets/my_app_bar.dart';
 import 'package:flutter_aqi/widgets/my_button.dart';
 import 'package:flutter_aqi/widgets/my_scroll_view.dart';
 import 'package:flutter_aqi/login/widgets/my_text_field.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:sp_util/sp_util.dart';
+import 'package:sprintf/sprintf.dart';
 
 import '../login_router.dart';
 
@@ -58,7 +68,25 @@ class _SMSLoginPageState extends State<SMSLoginPage> with ChangeNotifierMixin<SM
   }
 
   void _login() {
-    Toast.show('去登录......');
+    Map<String,dynamic> params = new Map();
+    params['username'] =  _phoneController.text;
+    params['password'] = _vCodeController.text;
+    DioUtils.instance.requestNetwork<LoginData>(Method.post, HttpApi.smslogin,
+      params: params,
+      queryParameters: {},
+      onSuccess: (data) {
+          if(data != null && data.code == 200){
+            SpUtil.putString(Constant.phone, _phoneController.text);
+            NeedRefreshEvent.refreshHandleFunction('AnimatedMapControllerPage');
+            NavigatorUtils.pushReplace(context, Routes.home, clearStack: true);
+          }else{
+            showToast("用户名或密码错误");
+          }
+      },
+      onError: (code, msg) {
+
+      },
+    );
   }
 
   @override
@@ -95,7 +123,18 @@ class _SMSLoginPageState extends State<SMSLoginPage> with ChangeNotifierMixin<SM
         keyboardType: TextInputType.number,
         hintText: AppLocalizations.of(context).inputVerificationCodeHint,
         getVCode: () {
-          Toast.show('获取验证码');
+          DioUtils.instance.requestNetwork<LoginData>(Method.get, sprintf(HttpApi.sendcode, [_phoneController.text]),
+            params: '',
+            queryParameters: {},
+            onSuccess: (data) {
+              if(data != null && data.code == 200){
+                showToast("发送成功");
+              }
+            },
+            onError: (code, msg) {
+
+            },
+          );
           return Future<bool>.value(true);
         },
       ),

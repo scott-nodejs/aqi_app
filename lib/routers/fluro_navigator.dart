@@ -12,6 +12,12 @@ class NavigatorUtils {
     Routes.router.navigateTo(context, path, replace: replace, clearStack: clearStack, transition: TransitionType.native);
   }
 
+  static void pushReplace(BuildContext context, String path,
+      {bool replace = false, bool clearStack = false}) {
+    unfocus();
+    Routes.router.navigateTo(context, path, replace: replace, clearStack: clearStack, transition: TransitionType.native);
+  }
+
   static void pushResult(BuildContext context, String path, Function(Object) function,
       {bool replace = false, bool clearStack = false}) {
     unfocus();

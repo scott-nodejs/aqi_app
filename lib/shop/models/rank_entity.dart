@@ -19,4 +19,5 @@ class City with JsonConvert<City>{
 class RankItem with JsonConvert<RankItem>{
   String name;
   int c;
+  int aqi;
 }

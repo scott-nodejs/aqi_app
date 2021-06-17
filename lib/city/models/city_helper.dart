@@ -3,6 +3,7 @@ import 'package:flutter_aqi/city/models/city_result.dart';
 import 'package:flutter_aqi/city/models/cityq_detail_entity.dart';
 import 'package:flutter_aqi/city/models/raiders_entity.dart';
 import 'package:flutter_aqi/city/models/trade_entity.dart';
+import 'package:flutter_aqi/login/entity/LoginData.dart';
 import 'package:flutter_aqi/shop/models/rank_entity.dart';
 
 import 'goods_item_entity.dart';
@@ -64,5 +65,13 @@ raidersEntityFormJson(RaidersEntity data, Map<String, dynamic> json){
   data.cityName = json['cityName']?.toString();
   data.jumbUrl = json['jumbUrl']?.toString();
   data.thumb = json['thumb']?.toString();
+  return data;
+}
+
+loginDataFormJson(LoginData data, Map<String, dynamic> json){
+  data.login = json['login'];
+  data.data = json['data']?.toString();
+  data.msg = json['msg']?.toString();
+  data.code = json['code']?.toInt();
   return data;
 }

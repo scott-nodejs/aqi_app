@@ -1,4 +1,5 @@
 
+import 'package:oktoast/oktoast.dart';
 import 'package:sp_util/sp_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/common/common.dart';
@@ -64,9 +65,7 @@ class _SettingPageState extends State<SettingPage> {
           ClickItem(
             title: '清除缓存',
             content: '23.5MB',
-            onTap: () {
-              SpUtil.clear();
-            }
+            onTap: _clear,
           ),
           ClickItem(
             title: '夜间模式',
@@ -104,6 +103,11 @@ class _SettingPageState extends State<SettingPage> {
       context: context,
       builder: (_) => const ExitDialog()
     );
+  }
+
+  void _clear() {
+    showToast("清理缓存成功");
+    SpUtil.remove(Constant.phone);
   }
 
   void _showUpdateDialog() {

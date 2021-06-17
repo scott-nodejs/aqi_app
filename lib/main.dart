@@ -54,7 +54,7 @@ class MyApp extends StatelessWidget {
     /// 适配数据(根据自己的数据结构，可自行选择添加)
     interceptors.add(AdapterInterceptor());
     configDio(
-      baseUrl: 'http://www.hazer.top/client/api/',
+      baseUrl: 'http://10.90.128.67:9090/client/api/',
       interceptors: interceptors,
     );
   }
