@@ -23,6 +23,8 @@ class _CitySelectPageState extends State<CityMultiSelectPage> {
   List<String> _indexBarData = <String>[];
   List<CityEntity> _selectList = <CityEntity>[];
 
+
+
   @override
   void initState() {
     super.initState();
@@ -94,11 +96,19 @@ class _CitySelectPageState extends State<CityMultiSelectPage> {
     final CityEntity model = _cityList[index];
     return InkWell(
       onTap: () => {
-        _selectList.add(model),
-        if(_selectList.length == 4){
+        setState(() {
+          model.checked = !model.checked;
+          if(model.checked){
+            _selectList.add(model);
+          }else{
+            _selectList.remove(model);
+          }
+        }),
+        if(_selectList.length == 3){
           NavigatorUtils.goBackWithParams(context, _selectList)
         }
       },
+
       child: Container(
         padding: const EdgeInsets.only(left: 16.0, right: 34.0),
         height: 40.0,
@@ -118,7 +128,13 @@ class _CitySelectPageState extends State<CityMultiSelectPage> {
                 )
               ),
               Expanded(
-                child: Text(model.name),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(model.name,style: TextStyle(color: model.checked ? Colors.red : Colors.black )),
+                    model.checked ? Text('✓',style : TextStyle(color: Colors.red,)) : Container(),
+                  ],
+                ),
               )
             ],
           ),

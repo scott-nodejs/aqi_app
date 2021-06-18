@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_aqi/account/models/city_entity.dart';
 import 'package:flutter_aqi/common/common.dart';
@@ -67,7 +69,7 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
   void initState() {
     super.initState();
     phone = SpUtil.getString(Constant.phone);
-    getCustomCity();
+    //getCustomCity();
     mapController = MapController();
   }
 
@@ -76,53 +78,22 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
       params: '',
       queryParameters: {},
       onSuccess: (data) {
-          if(data != null && data.code == 200 && data.data != null){
-            cityMaps.clear();
-            cityMaps.addAll(data.data);
-          }
-          citys.clear();
-          for(var city in cityMaps){
-            citys.add(city['name']);
-            selectcitys.add( MaterialButton(
-              minWidth: 60,
-              onPressed: () {
-                _controller.text = city['name'];
-                _animatedMapMove(LatLng(city['lat'],city['lon']), 10.0);
-              },
-              child: Text(city['name']),
-            ),);
-          }
-          selectcitys.add(GestureDetector(
-            onTap:()=>{
-              if(phone.isEmpty){
-                NavigatorUtils.push(context, LoginRouter.loginPage)
-              }else{
-                NavigatorUtils.pushResult(context, MapRouter.citySelectPage, (Object result) {
-                  SpUtil.remove(Constant.phone);
-                  List<String> uids = new List();
-                  List<CityEntity> models = result as List<CityEntity>;
-                  selectcitys.removeRange(0, 4);
-                  citys.clear();
-                  setState(() {
-                    for(int i = 0; i< models.length; i++){
-                      citys.add(models[i].name);
-                      uids.add(models[i].cityCode);
-                      selectcitys.insert(i, MaterialButton(
-                        minWidth: 60,
-                        onPressed: () {
-                          _controller.text = models[i].name;
-                          _animatedMapMove(LatLng(models[i].lat,models[i].lng), 10.0);
-                        },
-                        child: Text(models[i].name),
-                      ),);
-                    }
-                  });
-                  submitCustomCity(uids);
-                })
-              }
-
-            },
-            child:Icon(Icons.more_vert, color: Colors.grey),));
+            if(data != null && data.code == 200 && data.data != null){
+              cityMaps.clear();
+              cityMaps.addAll(data.data);
+            }
+            citys.clear();
+            for(var city in cityMaps){
+                citys.add(city['name']);
+                selectcitys.add( MaterialButton(
+                  minWidth: 60,
+                  onPressed: () {
+                    _controller.text = city['name'];
+                    _animatedMapMove(LatLng(city['lat'],city['lon']), 10.0);
+                  },
+                  child: Text(city['name']),
+              ),);
+            }
       },
       onError: (code, msg) {
 
@@ -230,17 +201,103 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
               builder: (_, provider, __) {
                 lat = SpUtil.getDouble("lat");
                 long = SpUtil.getDouble("lng");
+                MapEntity mapEntity = provider.entity;
+                if(mapEntity != null) {
+                  List<Map<String,dynamic>> data;
+                  if(provider.citys == null){
+                    data = mapEntity.data;
+                  }else{
+                    data = List();
+                    List<CityEntity> citys = provider.citys;
+                    citys.forEach((v) {
+                      Map<String,dynamic> map = Map();
+                      map['name'] = v.name;
+                      map['lat'] = v.lat;
+                      map['lon'] = v.lng;
+                      data.add(map);
+                    });
+                  }
+                  
+                  if(data != null && data.length > 0){
+                    cityMaps.clear();
+                    cityMaps.addAll(data);
+                  }
+                  citys.clear();
+                  for(var city in cityMaps){
+                    citys.add(city['name']);
+                    selectcitys.add( MaterialButton(
+                      minWidth: 60,
+                      onPressed: () {
+                        _controller.text = city['name'];
+                        _animatedMapMove(LatLng(city['lat'],city['lon']), 10.0);
+                      },
+                      child: Text(city['name']),
+                    ),);
+                  }
+                }
                 return Padding(
                         padding: EdgeInsets.all(0.0),
                         child: Column(
                           children: [
-                            Padding(
-                              padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                children: selectcitys,
-                              ),
+                            Stack(
+                              children: [
+                                Positioned(
+                                  child: selectcitys.length > 0 ? Container(
+                                      height: 40,
+                                      child:  new ListView(
+                                        scrollDirection:Axis.horizontal,
+                                        children: selectcitys
+                                      )): Container(),
+                                ),
+                                Positioned(
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: MaterialButton(
+                                      minWidth: 50,
+                                      color: Colors.white,
+                                      elevation: 5.0,
+                                      padding: EdgeInsets.all(0.0),
+                                      child: Icon(Icons.more_vert, color: Colors.grey),
+                                      onPressed: (){
+                                        if(phone.isEmpty){
+                                          NavigatorUtils.push(context, LoginRouter.loginPage);
+                                        }else{
+                                          NavigatorUtils.pushResult(context, MapRouter.citySelectPage, (Object result) {
+                                            List<String> uids = new List();
+                                            List<CityEntity> models = result as List<CityEntity>;
+                                            selectcitys.clear();
+                                            citys.clear();
+                                            for(int i = 0; i< models.length; i++){
+                                              citys.add(models[i].name);
+                                              uids.add(models[i].cityCode);
+                                              // selectcitys.add(MaterialButton(
+                                              //   minWidth: 60,
+                                              //   onPressed: () {
+                                              //     _controller.text = models[i].name;
+                                              //     _animatedMapMove(LatLng(models[i].lat,models[i].lng), 10.0);
+                                              //   },
+                                              //   child: Text(models[i].name),
+                                              // ),);
+                                            }
+                                            submitCustomCity(uids);
+                                            provider.setSelectCitys(models);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                )
+                              ],
+
                             ),
+
+                            // Padding(
+                            //   padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            //     children: selectcitys,
+                            //   ),
+                            // ),
                             Flexible(
                               child: Stack(
                                 children: <Widget>[

@@ -16,6 +16,7 @@ cityEntityFromJson(CityEntity data, Map<String, dynamic> json) {
 	if(json['lng'] != null){
 		data.lng = json['lng']?.toDouble();
 	}
+	data.checked = false;
 	return data;
 }
 

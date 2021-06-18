@@ -3,6 +3,7 @@ import 'package:flutter_aqi/generated/json/base/json_filed.dart';
 
 class MapEntity with JsonConvert<MapEntity>{
   List<MapItem> items;
+  List<Map<String,dynamic>> data;
 }
 
 class MapItem with JsonConvert<MapItem>{

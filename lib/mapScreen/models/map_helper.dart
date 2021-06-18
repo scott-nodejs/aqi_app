@@ -9,6 +9,12 @@ mapEntityFromJson(MapEntity data, Map<String, dynamic> json) {
       data.items.add(new MapItem().fromJson(v));
     });
   }
+  if (json['data'] != null) {
+    data.data = new List<Map<String,dynamic>>();
+    (json['data'] as List).forEach((v) {
+      data.data.add(v);
+    });
+  }
   return data;
 }
 

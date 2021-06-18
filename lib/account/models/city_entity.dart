@@ -7,6 +7,7 @@ class CityEntity with JsonConvert<CityEntity>, ISuspensionBean {
 	String firstCharacter;
 	double lat;
 	double lng;
+	bool checked;
 
 	@override
 	String getSuspensionTag() {
