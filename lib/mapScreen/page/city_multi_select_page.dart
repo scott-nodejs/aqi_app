@@ -69,8 +69,10 @@ class _CitySelectPageState extends State<CityMultiSelectPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(
+      appBar: MyAppBar(
         title: '选择城市',
+        actionName: '提交',
+        onPressed: () => NavigatorUtils.goBackWithParams(context, _selectList),
       ),
       body: SafeArea(
         child: AzListView(
@@ -104,9 +106,6 @@ class _CitySelectPageState extends State<CityMultiSelectPage> {
             _selectList.remove(model);
           }
         }),
-        if(_selectList.length == 3){
-          NavigatorUtils.goBackWithParams(context, _selectList)
-        }
       },
 
       child: Container(

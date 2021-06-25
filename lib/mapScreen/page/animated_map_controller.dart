@@ -69,7 +69,6 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
   void initState() {
     super.initState();
     phone = SpUtil.getString(Constant.phone);
-    //getCustomCity();
     mapController = MapController();
   }
 
@@ -223,6 +222,7 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                     cityMaps.addAll(data);
                   }
                   citys.clear();
+                  selectcitys.clear();
                   for(var city in cityMaps){
                     citys.add(city['name']);
                     selectcitys.add( MaterialButton(
@@ -246,19 +246,20 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                                       height: 40,
                                       child:  new ListView(
                                         scrollDirection:Axis.horizontal,
-                                        children: selectcitys
-                                      )): Container(),
+                                        children: List<Widget>.from(selectcitys)
+                                      )) : Container(),
                                 ),
                                 Positioned(
                                   child: Align(
                                     alignment: Alignment.centerRight,
-                                    child: MaterialButton(
-                                      minWidth: 50,
-                                      color: Colors.white,
-                                      elevation: 5.0,
-                                      padding: EdgeInsets.all(0.0),
-                                      child: Icon(Icons.more_vert, color: Colors.grey),
-                                      onPressed: (){
+                                    child: GestureDetector(
+                                      child: Container(
+                                        height: 40,
+                                        width: 40,
+                                        color: Colors.white,
+                                        child: Icon(Icons.wrap_text_sharp, color: Colors.grey),
+                                      ),
+                                      onTap: (){
                                         if(phone.isEmpty){
                                           NavigatorUtils.push(context, LoginRouter.loginPage);
                                         }else{
@@ -270,14 +271,6 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
                                             for(int i = 0; i< models.length; i++){
                                               citys.add(models[i].name);
                                               uids.add(models[i].cityCode);
-                                              // selectcitys.add(MaterialButton(
-                                              //   minWidth: 60,
-                                              //   onPressed: () {
-                                              //     _controller.text = models[i].name;
-                                              //     _animatedMapMove(LatLng(models[i].lat,models[i].lng), 10.0);
-                                              //   },
-                                              //   child: Text(models[i].name),
-                                              // ),);
                                             }
                                             submitCustomCity(uids);
                                             provider.setSelectCitys(models);
@@ -293,9 +286,12 @@ class AnimatedMapControllerPageState extends State<AnimatedMapControllerPage>
 
                             // Padding(
                             //   padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
-                            //   child: Row(
-                            //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            //     children: selectcitys,
+                            //   child: Container(
+                            //       height: 40,
+                            //       child: ListView(
+                            //           scrollDirection:Axis.horizontal,
+                            //           children: List<Widget>.from(selectcitys)
+                            //       )
                             //   ),
                             // ),
                             Flexible(
